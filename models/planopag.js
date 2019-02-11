@@ -50,5 +50,9 @@ module.exports = class PlanoPagamento extends Cadastro {
   }
 
 
+  static getInstance(idPlano) {
+    return Cadastro.getInstance(PlanoPagamento, idPlano)
+  }
+
 }
 

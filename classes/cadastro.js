@@ -102,4 +102,15 @@ module.exports = class Cadastro {
     })   
   }
 
+
+  static getInstance(ClassName, value, field = 'id') {
+    return new Promise((resolve, reject) => {
+      let obj = new ClassName()
+      obj.findByField(field, '=', value)
+        .then(found => resolve(found ? obj : {}))
+        .catch(error => reject(error))
+    })
+  }
+    
+
 }

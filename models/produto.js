@@ -82,6 +82,7 @@ module.exports = class Produto extends Cadastro {
     })
   }
 
+
   static precoTabela(idProduto, idLoja, idTabela) {
     return new Promise((resolve, reject) => {
       Produto.precoVenda(idProduto, idLoja, idTabela)
@@ -167,12 +168,16 @@ module.exports = class Produto extends Cadastro {
     })
   }
 
-  static load(idProduto, idLoja) {
+
+  static getInstance(idProduto, idLoja) {
+    if (! idLoja) {
+      throw new createError.BadRequest('Loja não informada na busca do produto!')
+    }
     return new Promise((resolve, reject) => {
-      let produto = new Produto()
-      produto.idLoja = idLoja
-      produto.findById(idProduto)
-        .then(found => resolve(found ? produto : {}))
+      let obj = new Produto()
+      obj.idLoja = idLoja
+      obj.findById(idProduto)
+        .then(found => resolve(found ? obj : {}))
         .catch(error => reject(error))
     })
   }

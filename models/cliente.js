@@ -102,4 +102,8 @@ module.exports = class Cliente extends Cadastro {
     })
   }
 
+  static getInstance(idCliente) {
+    return Cadastro.getInstance(Cliente, idCliente)
+  }
+
 }

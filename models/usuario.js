@@ -61,13 +61,8 @@ module.exports = class Usuario extends Cadastro {
   }
 
   
-  static getInstance(value, field = 'id') {
-    return new Promise((resolve, reject) => {
-      let user = new Usuario()
-      user.findByField(field, '=', value)
-        .then(found => resolve(found ? user : {}))
-        .catch(error => reject(error))
-    })
+  static getInstance(value, field) {
+    return Cadastro.getInstance(Usuario, value, field)
   }
 
 

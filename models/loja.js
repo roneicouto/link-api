@@ -7,13 +7,8 @@ module.exports = class Loja extends Cadastro {
   }
 
 
-  static getInstance(value, field = 'id') {
-    return new Promise((resolve, reject) => {
-      let loja = new Loja()
-      loja.findByField(field, '=', value)
-        .then(found => resolve(found ? loja : {}))
-        .catch(error => reject(error))
-    })
+  static getInstance(idLoja) {
+    return Caddastro.getInstance(Loja, idLoja)
   }
 
   
