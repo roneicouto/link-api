@@ -1,6 +1,8 @@
 const createError = require('http-errors')
 const crypto = require('crypto')
 const moment = require('moment')
+const CPF = require('cpf')
+const CNPJ = require('cnpj')
 
 exports.routeNotFound = (req, res) => {
   throw new createError.NotFound('URL (' + req.path + ') ou método (' + req.method + ') inexistente!')
@@ -43,7 +45,15 @@ exports.daysBetween = (initDate, finalDate = Date.now()) => {
   return moment(finalDate).diff(initDate, 'days')
 }
 
-exports.isEmptyObject = (obj) => {
+exports.isEmptyObject = obj => {
   for (let p in obj) return false
   return true
  }
+
+exports.cpfValido = numCPF => {
+  return numCPF && /^\d{11}$/.test(numCPF) && CPF.isValid(numCPF)
+}
+
+exports.cnpjValido = numCNPJ => {
+  return numCNPJ && /^\d{14}$/.test(numCNPJ) && CNPJ.validate(numCNPJ)
+}

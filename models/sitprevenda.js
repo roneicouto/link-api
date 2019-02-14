@@ -24,14 +24,14 @@ module.exports = class SituacaoPreVenda {
     if (! venda.data) {
       throw new createError.NotFound('Pré-venda não encontrada!')    
     }
-    let venda = prevenda.data
+    venda = venda.data
     if (! 'PI'.includes(venda.situacao)) {
       throw new createError.BadRequest('Situação da pré-venda inválida para validação!')
     }
 
     let config = await SysConfig.getConfig()
 
-    let [cliente, plano, user, opVenda] = await Promise.all([
+    let [cliente, planoPag, user, opVenda] = await Promise.all([
       Cliente.getInstance(venda.id_cliente),
       PlanoPag.getInstance(venda.id_plano_pag),
       PlanoPag.getPermissoesUsuario(venda.id_plano_pag, idNivel),
@@ -41,15 +41,16 @@ module.exports = class SituacaoPreVenda {
     if (! cliente.data) {
       throw new createError.NotFound('Cliente não encontrado!')
     }
-    if (! plano.data) {
+    if (! planoPag.data) {
       throw new createError.NotFound('Plano de pagamento não encontrado!')
     }
     if (! opVenda.data) {
       throw new createError.NotFound('Operação comercial de venda não encontrada!')
     }
     cliente = cliente.data
-    plano   = plano.data
     opVenda = opVenda.data
+
+    let plano = planoPag.data    
 
     // validando o cliente
 
@@ -117,12 +118,13 @@ module.exports = class SituacaoPreVenda {
     // validando os itens da prevenda
 
     await Promise.all(venda.itens.map(async (item) => {
+      let undf
       let [produto, preco] = await Promise.all([        
         Produto.getInstance(item.id_produto, venda.id_loja),
         Produto.precoVenda(item.id_produto, venda.id_loja, venda.id_tab_preco)
       ])
       
-      if (! plano.validateProduto(produto.data)) {
+      if (! planoPag.validateProduto(produto.data)) {
         pendencia('produto_plano', undf, item.seq)
       }
       if (! plano.promocao && item.promocao) {
@@ -142,7 +144,7 @@ module.exports = class SituacaoPreVenda {
     }))
 
     this.irregular = (this.data.length > 0)            
-    return ! this.irregular
+    return this
   }
 
 

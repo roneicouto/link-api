@@ -12,12 +12,32 @@ class RotaPreVenda {
     this.setRouteGetItens()
     this.setRouteGetPeriodo()
     this.setRouteValidate()
+    this.setRoutePost()
+  }
+
+
+  setRoutePost() {
+    const route = this.app.route(this.app.get('path-api') + '/prevendas')    
+    route.post((req, res, next) => {
+
+      const postPreVenda = async () => {
+        const prevenda = new PreVenda()
+        prevenda.data = req.body
+        await prevenda.save(true)
+        return prevenda
+      }
+
+      postPreVenda()
+        .then(prevenda => res.status(200).json({sucesso: true, numero: prevenda.data.numero}))
+        .catch(error => next(error))
+
+    })
   }
 
 
   setRouteGetNumero() {
     const route = this.app.route(this.app.get('path-api') + '/prevendas/:idLoja/:numero')    
-    route.get( (req, res, next) => {
+    route.get((req, res, next) => {
 
       const getPreVenda = async () => {
         let {idLoja, numero} = req.params        
@@ -39,7 +59,7 @@ class RotaPreVenda {
 
   setRouteGetItens() {
     const route = this.app.route(this.app.get('path-api') + '/prevendas/:idLoja/:numero/itens')    
-    route.get( (req, res, next) => {
+    route.get((req, res, next) => {
 
       const getItensPreVenda = async () => {
         let {idLoja, numero} = req.params        
@@ -64,22 +84,16 @@ class RotaPreVenda {
     const route = this.app.route(this.app.get('path-api') + '/prevendas/:idLoja/:numero/validacoes')    
     route.get( (req, res, next) => {
 
-      let sitPreVenda
-      const {idLoja, numero} = req.params
-      let promises = Promise.all([
-        new SitPreVenda()
-      ])
-      req.login.usuario.validateLoja(idLoja)
-      sitPreVenda = new SitPreVenda(idLoja, numero)
-      sitPreVenda.validate(req.login.usuario.id_nivel)
-        .then( ok => {
-          if (! ok) {
-            res.status(400).json(sitPreVenda.data)
-          }
-          res.status(200).json(sitPreVenda.data)
-        })
-        .catch(error => next(error))
-
+      const getSituacaoPreVenda = async () => {
+        let {idLoja, numero} = req.params
+        await req.login.usuario.validateLoja(idLoja)
+        return new SitPreVenda(idLoja, numero).validate()
+      }
+      
+      getSituacaoPreVenda()
+      .then(sitPV => sitPV.irregular ? res.status(400).json({sucesso: false, pendencias: sitPV.data})
+                                     : res.status(200).json({sucesso: true}))
+      .catch(error => next(error))
     })
   }
 

@@ -1,12 +1,53 @@
 const db = require('../utils/db')
 const utils = require('../utils/utils')
 const Cadastro = require('../classes/cadastro')
+const Municipio = require('../models/municipio')
+const UF = require('../models/uf')
 
 module.exports = class Cliente extends Cadastro {
 
   constructor() {
     super('vs_api_clientes')
   }
+
+
+  async create() {
+    let data = this.data, msg = []
+    if (! data.nome)
+      msg.push('Nome não informado')
+    if (! data.pessoa || ! /P|F/.test(data.pessoa))
+      msg.push('Tipo de pessoa não informado ou inválido')
+    else {
+      if (data.pessoa==="J" && ! utils.cnpjValido(data.cpf_cnpj))
+        msg.push('CNPJ inválido')
+      else if (data.pessoa==='J' 
+               && data.insc_estadual 
+               && /\d/.test(data.insc_estadual)
+               && ! UF.inscricaoEstadualValida(data.insc_estadual, data.uf))
+        msg.push('Inscrição Estadual inválida!')
+      else if (data.pessoa==="F" && ! utils.cpfValido(data.cpf_cnpj))
+        msg.push('CPF inválido')      
+    }
+    if (! data.endereco)
+      msg.push('Endereço não informado')
+    if (! parseInt(data.numero_end))
+      msg.push('Número do endereço não informado')
+    if (! data.cidade)
+      msg.push('Nome da cidade não informado')
+    if (! await Municipio.exists(data.id_municipio))
+      msg.push('Código do municipio inválido')
+    if (! await UF.exists(data.uf))
+      msg.push('UF inválida')
+    if (! data.cep || ! /^\d{8}$/.test(data.cep))
+      msg.push('CEP inválido')
+
+    if (msg.length > 0) 
+      return {sucesso: false, erros: msg}
+
+    return {sucesso: true, cliente: this.data}
+
+  }
+
 
 
   find(id) {
