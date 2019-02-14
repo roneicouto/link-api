@@ -9,6 +9,7 @@ class RotaPreVenda {
   constructor(app) {
     this.app = app
     this.setRouteGetNumero()
+    this.setRouteGetItens()
     this.setRouteGetPeriodo()
     this.setRouteValidate()
   }
@@ -25,15 +26,38 @@ class RotaPreVenda {
         if (! prevenda.data) {
           throw new createError.NotFound('Pré-venda ' + numero + ' não encontrada na loja ' + idLoja + ' !')
         }
-        return prevenda
+        return prevenda.data
       }
 
       getPreVenda()
-        .then(p => res.status(200).json(p.data))
-        .catch(e => next(e))
+        .then(prevenda => res.status(200).json(prevenda))
+        .catch(error => next(error))
 
     })
   }
+
+
+  setRouteGetItens() {
+    const route = this.app.route(this.app.get('path-api') + '/prevendas/:idLoja/:numero/itens')    
+    route.get( (req, res, next) => {
+
+      const getItensPreVenda = async () => {
+        let {idLoja, numero} = req.params        
+        await req.login.usuario.validateLoja(idLoja)
+        let itens = await PreVenda.getItens(idLoja, numero)
+        if (! itens.length) {
+          throw new createError.NotFound('Os itens da pré-venda não foram encontrados!')
+        }
+        return itens
+      }
+
+      getItensPreVenda()
+        .then(itens => res.status(200).json(itens))
+        .catch(error => next(error))
+
+    })
+  }
+
 
 
   setRouteValidate() {
@@ -60,8 +84,6 @@ class RotaPreVenda {
   }
 
 
-
-
   setRouteGetPeriodo() {
     const route = this.app.route(this.app.get('path-api') + '/prevendas')    
     route.get( (req, res, next) => {
@@ -73,17 +95,17 @@ class RotaPreVenda {
         } else if (req.login.usuario.data.lojas.length) {
           throw new createError.BadRequest('A loja deve ser informada!')
         }
-        return new PreVenda().findByPeriodo(filter)
+        let lista = await new PreVenda().findByPeriodo(filter)
+        if (! lista.length) {
+          throw new createError.NotFound('Pré-vendas não encontradas!')
+        }
+        return lista.map(prevenda => prevenda.data)
       }
       
       getPreVendas()
-        .then(lista => {
-          if (! lista.length) {
-            throw new createError.NotFound('Pré-vendas não encontradas!')
-          }
-          res.status(200).json(lista.map( prevenda => prevenda.data))
-        })
+        .then(lista => res.status(200).json(lista))
         .catch(error => next(error))
+
     })
   }
 }

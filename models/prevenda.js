@@ -117,7 +117,7 @@ module.exports = class PreVenda {
     let sql = 'SELECT * FROM vs_api_pre_vendas_itens '+
               'WHERE id_loja = $1 and numero = $2 '+
               'ORDER BY seq'
-    let resp = await db.query(sql, [idLoja, numero])
+    let resp = await db.query(sql, [idLoja, numero.padStart(10)])
     return resp.rows
   }
 
