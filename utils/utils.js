@@ -43,8 +43,7 @@ exports.daysBetween = (initDate, finalDate = Date.now()) => {
   return moment(finalDate).diff(initDate, 'days')
 }
 
-exports.newObjectById = async (ClassName, id) => {
-  let result = new ClassName()
-  await result.getById(id)
-  return result
-}
+exports.isEmptyObject = (obj) => {
+  for (let p in obj) return false
+  return true
+ }

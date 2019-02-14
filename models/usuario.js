@@ -80,7 +80,7 @@ module.exports = class Usuario extends Cadastro {
           user.validateLoja(payload.idLoja)
             .then(ok => resolve({
               success: true,
-              usuario: user.data,
+              usuario: user,
               idLoja: payload.idLoja
             }))
             .catch(error => reject(error))

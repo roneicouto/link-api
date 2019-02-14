@@ -8,7 +8,7 @@ module.exports = class Loja extends Cadastro {
 
 
   static getInstance(idLoja) {
-    return Caddastro.getInstance(Loja, idLoja)
+    return Cadastro.getInstance(Loja, idLoja)
   }
 
   
