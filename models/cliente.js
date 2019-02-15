@@ -3,6 +3,7 @@ const utils = require('../utils/utils')
 const Cadastro = require('../classes/cadastro')
 const Municipio = require('../models/municipio')
 const UF = require('../models/uf')
+const Loja = require('../models/loja')
 
 module.exports = class Cliente extends Cadastro {
 
@@ -13,13 +14,15 @@ module.exports = class Cliente extends Cadastro {
 
   async create() {
     let data = this.data, msg = []
-    if (! data.nome)
-      msg.push('Nome não informado')
+    if (! data.id_loja || ! await Loja.exists(data.id_loja))
+      msg.push('Loja não informada ou não existe!')
+    if (! data.nome || data.nome.replace(/[^[:alpha:]]/g, '').length < 10)
+      msg.push('Nome não informado ou muito curto!')
     if (! data.pessoa || ! /P|F/.test(data.pessoa))
-      msg.push('Tipo de pessoa não informado ou inválido')
+      msg.push('Tipo de pessoa inválido ou não informado!')
     else {
       if (data.pessoa==="J" && ! utils.cnpjValido(data.cpf_cnpj))
-        msg.push('CNPJ inválido')
+        msg.push('CNPJ inválido!')
       else if (data.pessoa==='J' 
                && data.insc_estadual 
                && /\d/.test(data.insc_estadual)
@@ -27,6 +30,12 @@ module.exports = class Cliente extends Cadastro {
         msg.push('Inscrição Estadual inválida!')
       else if (data.pessoa==="F" && ! utils.cpfValido(data.cpf_cnpj))
         msg.push('CPF inválido')      
+      else {
+        let cliente = new Cliente()
+        let found = await cliente.find(data.cpf_cnpj)
+        if (found)
+          msg.push((data.pessoa==='J' ? 'CNPJ' : 'CPF') + ' já cadastrado. Cliente ' + cliente.data.id + ' - ' + cliente.data.nome)
+      }
     }
     if (! data.endereco)
       msg.push('Endereço não informado')
@@ -35,23 +44,61 @@ module.exports = class Cliente extends Cadastro {
     if (! data.cidade)
       msg.push('Nome da cidade não informado')
     if (! await Municipio.exists(data.id_municipio))
-      msg.push('Código do municipio inválido')
+      msg.push('Código do municipio inválido ou não informado')
     if (! await UF.exists(data.uf))
-      msg.push('UF inválida')
+      msg.push('UF inválida ou não informada')
     if (! data.cep || ! /^\d{8}$/.test(data.cep))
-      msg.push('CEP inválido')
-
+      msg.push('CEP inválido ou não informado')
+    if (! data.telefone && ! data.celular)
+      msg.push('Telefone ou celular não informado')
+    if (data.sexo && ! /M|F/.test(data.sexo))
+      msg.push('Sexo deve ser M (Masculino) ou F (Feminino)')
+    
     if (msg.length > 0) 
       return {sucesso: false, erros: msg}
 
-    return {sucesso: true, cliente: this.data}
+    let params = [
+        data.nome, 
+        data.pessoa, 
+        data.nome_fantasia || '',
+        data.apelido || '',
+        data.cpf_cnpj, 
+        data.insc_estadual,
+        data.endereco, 
+        data.numero_end,
+        data.bairro || '', 
+        data.cidade, 
+        data.id_municipio, 
+        data.uf, 
+        data.cep,
+        data.id_loja,
+        data.telefone || '',
+        data.celular || '',
+        data.email || '',
+        data.sexo || '',
+        data.data_nasc || null,
+        data.consumidor===undefined ? true : data.consumidor,
+        data.crt || (data.pessoa==='J' ? '3' : ''),
+        data.id_usuario
+    ]
+
+    let cmdSql = 'SELECT api_novo_cliente('
+    
+    params.forEach((v,i) => cmdSql += (i > 0 ? ',' : '') + '$' + (++i))
+    cmdSql += ') as id'
+
+    let {rows} = await db.query(cmdSql, params)
+
+    this.data.id = rows[0].id
+
+    return {sucesso: true, id_cliente: this.data.id}
 
   }
 
 
 
   find(id) {
-    return this.findByField(id.length > 10 ? 'cnpj_cpf' : 'id', '=', id)
+    return this.findByField(id.length > 10 ? 'cpf_cnpj' : 'id', '=', id)
   }
 
 

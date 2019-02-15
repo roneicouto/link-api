@@ -16,7 +16,7 @@ module.exports = class UF extends Cadastro {
 
 
   static getInstance(uf) {
-    return Cadastro.getInstance(UF, uf)
+    return Cadastro.getInstance(UF, uf, 'sigla')
   }
 
   static inscricaoEstadualValida(insc, uf) {

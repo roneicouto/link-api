@@ -1,5 +1,3 @@
-const utils = require('../../utils/utils')
-const createError = require('http-errors')
 const Cliente = require('../../models/cliente')
 
 class RotaClientes {
@@ -17,6 +15,7 @@ class RotaClientes {
       const postCliente = async () => {
         const cliente = new Cliente()
         cliente.data = req.body
+        cliente.data.id_usuario = req.login.usuario.data.id
         return cliente.create()
       }
 
