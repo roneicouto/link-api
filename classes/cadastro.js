@@ -103,13 +103,10 @@ module.exports = class Cadastro {
   }
 
 
-  static getInstance(ClassName, value, field = 'id') {
-    return new Promise((resolve, reject) => {
-      let obj = new ClassName()
-      obj.findByField(field, '=', value)
-        .then(found => resolve(found ? obj : {}))
-        .catch(error => reject(error))
-    })
+  static async getInstance(ClassName, value, field = 'id') {
+    let obj = new ClassName()
+    let found = await obj.findByField(field, '=', value)
+    return found ? obj : {}
   }
     
 

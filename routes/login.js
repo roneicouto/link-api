@@ -18,10 +18,11 @@ module.exports = (app) => {
   })
 
   app.use(app.get('path-api'), (req, res, next) => {
-    const token = req.body.token || req.query.token || req.headers['x-access-token']
+    let token = req.headers.authorization || req.body.token || req.query.token
     if (!token) {
       throw new createError.BadRequest('Falta informar o token!')
     }
+    token = token.replace('Bearer ', '')
     Usuario.validateToken(token)
       .then(login => {
         req.login = login

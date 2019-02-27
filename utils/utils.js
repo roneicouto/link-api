@@ -9,10 +9,10 @@ exports.routeNotFound = (req, res) => {
 }
 
 exports.handlerError = (err, req, res, next) => {
-  if (err instanceof createError.HttpError) {
-    return res.status(err.statusCode).json(err)
-  }
-  res.status(err.status || 500).send(err.message)
+  let status  = err.status || err.statusCode || 500
+  let message = err.message || 'Mensagem de erro não encontrada.'
+  
+  res.status(status).json({status, message})
 }
 
 exports.md5 = (text) => {

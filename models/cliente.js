@@ -11,9 +11,18 @@ module.exports = class Cliente extends Cadastro {
     super('vs_api_clientes')
   }
 
+  create() {
+    return this.save(true)
+  }
 
-  async create() {
+  update() {
+    return this.save(false)
+  }
+
+  async save(novo) {
     let data = this.data, msg = []
+    if (! novo && ! /\d/.test(data.id))
+      msg.push('ID do cliente inválido ou não informado!')
     if (! data.id_loja || ! await Loja.exists(data.id_loja))
       msg.push('Loja não informada ou não existe!')
     if (! data.nome || data.nome.replace(/[^[:alpha:]]/g, '').length < 10)
@@ -30,12 +39,6 @@ module.exports = class Cliente extends Cadastro {
         msg.push('Inscrição Estadual inválida!')
       else if (data.pessoa==="F" && ! utils.cpfValido(data.cpf_cnpj))
         msg.push('CPF inválido')      
-      else {
-        let cliente = new Cliente()
-        let found = await cliente.find(data.cpf_cnpj)
-        if (found)
-          msg.push((data.pessoa==='J' ? 'CNPJ' : 'CPF') + ' já cadastrado. Cliente ' + cliente.data.id + ' - ' + cliente.data.nome)
-      }
     }
     if (! data.endereco)
       msg.push('Endereço não informado')
@@ -57,7 +60,8 @@ module.exports = class Cliente extends Cadastro {
     if (msg.length > 0) 
       return {sucesso: false, erros: msg}
 
-    let params = [
+      let params = [
+        novo ? '' : data.id,
         data.nome, 
         data.pessoa, 
         data.nome_fantasia || '',
@@ -82,7 +86,7 @@ module.exports = class Cliente extends Cadastro {
         data.id_usuario
     ]
 
-    let cmdSql = 'SELECT api_novo_cliente('
+    let cmdSql = 'SELECT api_salvar_cliente('
     
     params.forEach((v,i) => cmdSql += (i > 0 ? ',' : '') + '$' + (++i))
     cmdSql += ') as id'
@@ -143,51 +147,49 @@ module.exports = class Cliente extends Cadastro {
   }
 
 
-  static getResumoFinanceiro(cliente) {
-    return new Promise((resolve, reject) => {
+  static async delete(id) {
+    let {rows} = await db.query('SELECT api_excluir_cliente($1) as sucesso', [id])
+    return {sucesso: rows[0].sucesso}
+  }
 
-      let promises = [
-        db.query('SELECT * FROM vs_api_contas_receber WHERE id_cliente = $1', [cliente.id]),
-        db.query('SELECT * FROM vs_api_cheques WHERE id_cliente = $1 and situacao = $2', [cliente.id, '2'])        
-      ]
 
-      Promise.all(promises)
-        .then(results => {
+  static async getResumoFinanceiro(cliente) {
 
-          let dias_atraso = 0
-          let saldo_devedor = 0
-          let saldo_acordos = 0    
-          let debito_atraso = 0
-          let cheques_devol = 0
-          let limite_disp = 0
-    
-          results[0].rows.forEach(r => {
-            dias_atraso   = Math.max(dias_atraso, r.dias)
-            saldo_devedor += r.saldo
-            saldo_acordos += r.acordo ? r.saldo : 0      
-            debito_atraso += r.dias > 0 ? r.saldo : 0
-          })
+    let results = await Promise.all([
+      db.query('SELECT * FROM vs_api_contas_receber WHERE id_cliente = $1', [cliente.id]),
+      db.query('SELECT * FROM vs_api_cheques WHERE id_cliente = $1 and situacao = $2', [cliente.id, '2'])        
+    ])
 
-          results[1].rows.forEach(r => cheques_devol += r.valor)          
+    let dias_atraso = 0
+    let saldo_devedor = 0
+    let saldo_acordos = 0    
+    let debito_atraso = 0
+    let cheques_devol = 0
+    let limite_disp = 0
 
-          saldo_devedor = utils.roundVal(saldo_devedor)
-          saldo_acordos = utils.roundVal(saldo_acordos)
-          debito_atraso = utils.roundVal(debito_atraso)
-          cheques_devol = utils.roundVal(cheques_devol)
-          limite_disp   = utils.roundVal(Math.max(0, cliente.limite_cred - saldo_devedor))
-
-          resolve({
-            dias_atraso,
-            saldo_devedor,
-            saldo_acordos,
-            debito_atraso,
-            cheques_devol,
-            limite_disp
-          })
-
-        })
-        .catch(error => reject(error))
+    results[0].rows.forEach(r => {
+      dias_atraso   = Math.max(dias_atraso, r.dias)
+      saldo_devedor += r.saldo
+      saldo_acordos += r.acordo ? r.saldo : 0      
+      debito_atraso += r.dias > 0 ? r.saldo : 0
     })
+
+    results[1].rows.forEach(r => cheques_devol += r.valor)          
+
+    saldo_devedor = utils.roundVal(saldo_devedor)
+    saldo_acordos = utils.roundVal(saldo_acordos)
+    debito_atraso = utils.roundVal(debito_atraso)
+    cheques_devol = utils.roundVal(cheques_devol)
+    limite_disp   = utils.roundVal(Math.max(0, cliente.limite_cred - saldo_devedor))
+
+    return {
+      dias_atraso,
+      saldo_devedor,
+      saldo_acordos,
+      debito_atraso,
+      cheques_devol,
+      limite_disp
+    }
   }
 
   static getInstance(idCliente) {

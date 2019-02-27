@@ -1,7 +1,7 @@
 const utils = require('../../utils/utils')
 const createError = require('http-errors')
 const PreVenda = require('../../models/prevenda')
-const SitPreVenda = require('../../models/sitprevenda')
+const AnalisePreVenda = require('../../models/analiseprevenda')
 
 
 class RotaPreVenda {
@@ -13,6 +13,7 @@ class RotaPreVenda {
     this.setRouteGetPeriodo()
     this.setRouteValidate()
     this.setRoutePost()
+    this.setRoutePut()
   }
 
 
@@ -20,20 +21,41 @@ class RotaPreVenda {
     const route = this.app.route(this.app.get('path-api') + '/prevendas')    
     route.post((req, res, next) => {
 
-      const postPreVenda = async () => {
-        const prevenda = new PreVenda()
-        prevenda.data = req.body
-        await prevenda.save(true)
-        return prevenda
-      }
-
-      postPreVenda()
-        .then(prevenda => res.status(200).json({sucesso: true, numero: prevenda.data.numero}))
+      req.body.id_usuario = req.login.usuario.data.id
+      this.savePreVenda(true, req.body)
+        .then(result => res.status(result.sucesso ? 200 : 400).json(result))
         .catch(error => next(error))
 
     })
   }
 
+
+  setRoutePut() {
+    const route = this.app.route(this.app.get('path-api') + '/prevendas/:idLoja/:numero')
+    route.put((req, res, next) => {
+
+      req.body.id_loja = req.params.idLoja
+      req.body.numero = req.params.numero
+      req.body.id_usuario = req.login.usuario.data.id   
+      this.savePreVenda(false, req.body)
+        .then(result => res.status(result.sucesso ? 200 : 400).json(result))
+        .catch(error => next(error))
+
+    })
+  }
+
+
+  async savePreVenda(novo, data) {
+    const prevenda = new PreVenda()
+    prevenda.data = data
+    let result = novo ? await prevenda.create() : await prevenda.update()
+    if (result.sucesso) {
+      let analise = await AnalisePreVenda.getInstance(result.id_loja, result.numero, data.id_usuario)
+      result.pendencias = analise.pendencias.length
+    }
+    return result
+  }
+  
 
   setRouteGetNumero() {
     const route = this.app.route(this.app.get('path-api') + '/prevendas/:idLoja/:numero')    
@@ -84,16 +106,15 @@ class RotaPreVenda {
     const route = this.app.route(this.app.get('path-api') + '/prevendas/:idLoja/:numero/validacoes')    
     route.get( (req, res, next) => {
 
-      const getSituacaoPreVenda = async () => {
+      const promiseAnalise = async () => {
         let {idLoja, numero} = req.params
         await req.login.usuario.validateLoja(idLoja)
-        return new SitPreVenda(idLoja, numero).validate()
+        return AnalisePreVenda.getInstance(idLoja, numero, req.login.usuario.data.id)
       }
       
-      getSituacaoPreVenda()
-      .then(sitPV => sitPV.irregular ? res.status(400).json({sucesso: false, pendencias: sitPV.data})
-                                     : res.status(200).json({sucesso: true}))
-      .catch(error => next(error))
+      promiseAnalise()
+        .then(analise => res.status(200).json(analise))
+        .catch(error => next(error))
     })
   }
 
