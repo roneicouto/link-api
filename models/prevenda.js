@@ -4,6 +4,7 @@ const utils = require('../utils/utils')
 const SqlPage = require('../classes/sql-page')
 const Loja = require('../models/loja')
 const OpComercial = require('../models/opcomercial')
+const Produto = require('../models/produto')
 
 
 module.exports = class PreVenda {
@@ -217,7 +218,7 @@ module.exports = class PreVenda {
       await client.query('BEGIN')
 
       let {rows} = await client.query(cmdSql, params)
-      this.data.numero = rows[0].numero
+      data.numero = rows[0].numero
   
       await Promise.all(data.itens.map((item, i) => {
         item.seq = (i + 1).toString().padStart(3, '0')
@@ -237,7 +238,6 @@ module.exports = class PreVenda {
           item.pdesc,
           item.vl_total,
           item.preco_tabela,
-          item.estoque,
           item.promocao
         ]
 
@@ -247,6 +247,7 @@ module.exports = class PreVenda {
         return client.query(cmdSql, params)
       }))
 
+      await client.query( 'SELECT api_reservar_pre_venda($1, $2)', [data.id_loja, data.numero])
       await client.query('COMMIT')
 
     } catch (error) {
@@ -296,5 +297,41 @@ module.exports = class PreVenda {
     return found ? prevenda : {}
   }
   
+
+  static async saveTempItem(novo, item) {
+    let msg = []
+    item.id_prevenda = parseInt(item.id_prevenda || 0)
+    item.seq         = parseInt(item.seq         || 0)
+    if (!novo && !item.id_prevenda)
+      msg.push('ID da pre-venda temporária inválido ou não informado.')
+    if (!novo && !item.seq)
+      msg.push('Sequência do item inválida ou não informada.')
+    if (!item.id_produto)
+      msg.push('ID do produto ou serviço não informado.')
+    if (!item.quantidade || item.quantidade <= 0)
+      msg.push('Quantidade do item inválida.')
+    if (!item.preco || item.preco <= 0)
+      msg.push('Preço do item inválido.')
+
+    if (msg.length > 0) 
+      return {sucesso: false, erros: msg}
+
+    let params = [
+      item.id_loja,
+      item.id_prevenda,
+      item.seq,
+      item.id_produto,
+      item.quantidade,
+      item.preco,
+      item.pdesc,
+      item.vl_total,
+      item.promocao
+    ]
+    let sql = 'SELECT api_prevenda_temp_salvar_item('
+    params.forEach((v, i) => sql += (i > 0 ? ',' : '') + '$' + (++i))
+    sql += ') as id_prevenda'
+    let {rows} = await db.query(sql, params)
+    return {sucesso: true, id_prevenda: rows[0].id_prevenda}
+  }
 
 }

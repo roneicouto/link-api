@@ -12,6 +12,7 @@ const rotas = {
   gradesprodutos: 'gradeproduto',
   gruposclientes: 'grupocliente',
   lojas: 'loja',
+  municipios: 'municipio',
   ocrcobrancas: 'ocorrenciacobranca',
   ofsituacoes: 'of-situacao',
   opcomerciais: 'opcomercial',

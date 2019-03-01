@@ -14,9 +14,78 @@ class RotaPreVenda {
     this.setRouteValidate()
     this.setRoutePost()
     this.setRoutePut()
+
+    this.setRoutePostTempItem()
+    this.setRoutePutTempItem()
+    this.setRouteGetTempItem()
+    this.setRouteDeleteTempItem()
+    this.setRouteDeleteTemp()
   }
 
 
+  setRoutePostTempItem() {
+    const route = this.app.route(this.app.get('path-api') + '/prevendas/temp/itens')    
+    route.post((req, res, next) => {
+
+      PreVenda.saveTempItem(true, req.body)
+        .then(result => res.status(result.sucesso ? 200 : 400).json(result))
+        .catch(error => next(error))
+
+    })
+  }
+
+
+  setRoutePutTempItem() {
+    const route = this.app.route(this.app.get('path-api') + '/prevendas/temp/itens/:seq')    
+    route.put((req, res, next) => {
+
+      req.body.seq = req.params.seq
+      PreVenda.saveTempItem(false, req.body)
+        .then(result => res.status(result.sucesso ? 200 : 400).json(result))
+        .catch(error => next(error))
+
+    })
+  }
+
+
+  setRouteGetTempItem() {
+    const route = this.app.route(this.app.get('path-api') + '/prevendas/temp/itens/:seq?')    
+    route.get((req, res, next) => {
+
+      req.body.seq = req.params.seq || 0
+      PreVenda.getTempItem(req.body)
+        .then(result => res.status(result.sucesso ? 200 : 400).json(result))
+        .catch(error => next(error))
+
+    })
+  }
+
+
+  setRouteDeleteTempItem() {
+    const route = this.app.route(this.app.get('path-api') + '/prevendas/temp/itens/:seq')    
+    route.delete((req, res, next) => {
+
+      req.body.seq = req.params.seq
+      PreVenda.deleteTempItem(req.body)
+        .then(result => res.status(result.sucesso ? 200 : 400).json(result))
+        .catch(error => next(error))
+
+    })
+  }
+
+
+  setRouteDeleteTemp() {
+    const route = this.app.route(this.app.get('path-api') + '/prevendas/temp/:id')    
+    route.delete((req, res, next) => {
+
+      PreVenda.deleteTemp(req.params.id)
+        .then(result => res.status(result.sucesso ? 200 : 400).json(result))
+        .catch(error => next(error))
+
+    })
+  }
+
+  
   setRoutePost() {
     const route = this.app.route(this.app.get('path-api') + '/prevendas')    
     route.post((req, res, next) => {

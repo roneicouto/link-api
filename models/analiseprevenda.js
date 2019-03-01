@@ -121,7 +121,7 @@ module.exports = class AnalisePreVenda {
       }
     }
 
-    // validando o plano de pageamento
+    // validando o plano de pagamento
 
     if (/^\d+$/.test(plano.id_nivel) && user.id_nivel > plano.id_nivel) {
       pendencia('plano_usuario')  
