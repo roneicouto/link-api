@@ -296,22 +296,21 @@ module.exports = class PreVenda {
     let found    = await prevenda.findByNumero(idLoja, numero)
     return found ? prevenda : {}
   }
-  
 
-  static async saveTempItem(novo, item) {
+  
+  static async deleteTempItem(item) {
+
     let msg = []
     item.id_prevenda = parseInt(item.id_prevenda || 0)
-    item.seq         = parseInt(item.seq         || 0)
-    if (!novo && !item.id_prevenda)
+    item.seq_item    = parseInt(item.seq_item    || 0)
+    if (! item.id_loja)
+      msg.push('ID da loja não informado.')    
+    if (! item.id_prevenda)
       msg.push('ID da pre-venda temporária inválido ou não informado.')
-    if (!novo && !item.seq)
+    if (! item.seq_item)
       msg.push('Sequência do item inválida ou não informada.')
-    if (!item.id_produto)
-      msg.push('ID do produto ou serviço não informado.')
-    if (!item.quantidade || item.quantidade <= 0)
-      msg.push('Quantidade do item inválida.')
-    if (!item.preco || item.preco <= 0)
-      msg.push('Preço do item inválido.')
+    if (! item.id_usuario)
+      msg.push('ID do usuário não informado.')
 
     if (msg.length > 0) 
       return {sucesso: false, erros: msg}
@@ -319,19 +318,70 @@ module.exports = class PreVenda {
     let params = [
       item.id_loja,
       item.id_prevenda,
-      item.seq,
+      item.seq_item,
+      item.id_usuario
+    ]
+
+    let sql = 'SELECT api_prevenda_temp_excluir_item('
+    params.forEach((v, i) => sql += (i > 0 ? ',' : '') + '$' + (++i))
+    sql += ') as sucesso'
+  
+    let {rows} = await db.query(sql, params)
+  
+    return {sucesso: rows[0].sucesso}
+  
+  }
+
+
+  static async saveTempItem(novo, item) {
+
+    let msg = []
+    item.id_prevenda = parseInt(item.id_prevenda || 0)
+    item.seq_item    = parseInt(item.seq_item    || 0)
+    if (! novo && ! item.id_prevenda)
+      msg.push('ID da pre-venda temporária inválido ou não informado.')
+    if (! novo && ! item.seq_item)
+      msg.push('Sequência do item inválida ou não informada.')
+    if (!item.id_produto)
+      msg.push('ID do produto ou serviço não informado.')
+    if (! item.quantidade || item.quantidade <= 0)
+      msg.push('Quantidade do item inválida ou não informada.')
+    if (! item.preco || item.preco <= 0)
+      msg.push('Preço do item inválido ou não informado.')
+    if (! item.id_usuario)
+      msg.push('ID do usuário não informado.')
+    if (! item.id_loja)
+      msg.push('ID da loja não informado.')
+
+
+    if (msg.length > 0) 
+      return {sucesso: false, erros: msg}
+
+    let params = [
+      item.id_loja,
+      item.id_prevenda,
+      item.seq_item,
       item.id_produto,
+      item.complemento,
+      item.pos_grade,
+      item.fracionado,
       item.quantidade,
       item.preco,
+      item.preco_tab,
       item.pdesc,
       item.vl_total,
-      item.promocao
+      item.promocao,
+      item.id_usuario
     ]
+
     let sql = 'SELECT api_prevenda_temp_salvar_item('
     params.forEach((v, i) => sql += (i > 0 ? ',' : '') + '$' + (++i))
     sql += ') as id_prevenda'
+
     let {rows} = await db.query(sql, params)
+
     return {sucesso: true, id_prevenda: rows[0].id_prevenda}
+
   }
 
 }

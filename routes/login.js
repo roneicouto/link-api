@@ -1,3 +1,33 @@
+/**
+ * @api {post} /login Realiza o login de usuário na API
+ * @apiName PostLogin
+ * @apiGroup Usuários
+ *
+ * @apiParam {String} usuario Nome do usuário.
+ * @apiParam {String} senha   Senha do usuário.
+ * @apiParam {String} id_loja ID da loja onde o usuário estará logado.
+  *
+ * @apiSuccess {Boolean} success Retorna sempre <code>true</code>, indicando sucesso no login.
+ * @apiSuccess {String}  token   Token do usuário a ser usado nas próximas requisições.
+ *
+ * @apiSuccessExample Sucesso:
+ *     HTTP/1.1 200 OK
+ *    {
+ *      "success": true,
+ *      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZFVzZXIiOiJKICAiLCJpZExvamEiOiIwMCIsImlhdCI6MTU1MTgwODY3OSwiZXhwIjoxNTUxODk1MDc5fQ.JaVTco1LPPK5BVhIhIdpvq4vSlUucJEzzQyxT1u8YqY"
+ *    }
+ *
+ * @apiError {Boolean} success Retorna sempre <code>false</code>, indicando falha no login.
+ * @apiError {String}  message Mensagem de erro do login.
+ *
+ * @apiErrorExample Erro:
+ *     HTTP/1.1 401 Unauthorized
+ *     {
+ *       "success": false,
+ *       "message": "Usuário ou senha inválido!"
+ *     }
+ */
+
 const createError = require('http-errors')
 const Usuario = require('../models/usuario')
 

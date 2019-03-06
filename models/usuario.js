@@ -66,27 +66,21 @@ module.exports = class Usuario extends Cadastro {
   }
 
 
-  static validateToken(token) {
-    return new Promise((resolve, reject) => {
-      let payload = Usuario.decodeToken(token)
-      if (! payload) {
-        throw new createError.BadRequest('Token inválido!')
-      }
-      Usuario.getInstance(payload.idUser)
-        .then(user => {
-          if (! user.data) {
-            throw new createError.BadRequest('Usuário ' + payload.idUser + ' inexistente!')
-          }
-          user.validateLoja(payload.idLoja)
-            .then(ok => resolve({
-              success: true,
-              usuario: user,
-              idLoja: payload.idLoja
-            }))
-            .catch(error => reject(error))
-          })
-        .catch(error => reject(error))
-    })
+  static async validateToken(token) {
+    let payload = await Usuario.decodeToken(token)
+    if (! payload) {
+      throw new createError.BadRequest('Token inválido!')
+    }
+    let user = await Usuario.getInstance(payload.idUser)
+    if (! user.data) {
+      throw new createError.BadRequest('Usuário ' + payload.idUser + ' inexistente!')
+    }
+    await user.validateLoja(payload.idLoja)
+    return {
+      success: true,
+      usuario: user,
+      idLoja: payload.idLoja
+    }
   }
 
 

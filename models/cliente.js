@@ -11,16 +11,21 @@ module.exports = class Cliente extends Cadastro {
     super('vs_api_clientes')
   }
 
+
   create() {
     return this.save(true)
   }
+
 
   update() {
     return this.save(false)
   }
 
+  
   async save(novo) {
+
     let data = this.data, msg = []
+
     if (! novo && ! /\d/.test(data.id))
       msg.push('ID do cliente inválido ou não informado!')
     if (! data.id_loja || ! await Loja.exists(data.id_loja))
@@ -60,38 +65,9 @@ module.exports = class Cliente extends Cadastro {
     if (msg.length > 0) 
       return {sucesso: false, erros: msg}
 
-      let params = [
-        novo ? '' : data.id,
-        data.nome, 
-        data.pessoa, 
-        data.nome_fantasia || '',
-        data.apelido || '',
-        data.cpf_cnpj, 
-        data.insc_estadual,
-        data.endereco, 
-        data.numero_end,
-        data.bairro || '', 
-        data.cidade, 
-        data.id_municipio, 
-        data.uf, 
-        data.cep,
-        data.id_loja,
-        data.telefone || '',
-        data.celular || '',
-        data.email || '',
-        data.sexo || '',
-        data.data_nasc || null,
-        data.consumidor===undefined ? true : data.consumidor,
-        data.crt || (data.pessoa==='J' ? '3' : ''),
-        data.id_usuario
-    ]
-
-    let cmdSql = 'SELECT api_salvar_cliente('
+    let cmdSql = 'SELECT api_salvar_cliente( $1 ) as id'
     
-    params.forEach((v,i) => cmdSql += (i > 0 ? ',' : '') + '$' + (++i))
-    cmdSql += ') as id'
-
-    let {rows} = await db.query(cmdSql, params)
+    let {rows} = await db.query(cmdSql, [JSON.stringify(data)])
 
     this.data.id = rows[0].id
 

@@ -105,3 +105,5 @@ class RotaProdutos {
 }
 
 module.exports = (app) => { RotaProdutos.start(app) }
+
+
