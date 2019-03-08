@@ -148,3 +148,54 @@ class RotaPreVenda {
 }
 
 module.exports = (app) => new RotaPreVenda(app)
+
+
+
+/**
+ * @api {post} /prevendas  Gerar uma nova pré-venda
+ * @apiVersion 1.0.0
+ * @apiName postPreVendas
+ * @apiGroup Vendas
+ *
+ * @apiHeader {String} Authorization 'Bearer ' + Token obtido no login do usuário.
+ *
+ * @apiParam {Number}   id_venda          ID da venda a ser transformada em pré-venda.
+ * @apiParam {String}   id_cliente        ID (código) do cliente.
+ * @apiParam {String}   id_vendedor       ID do vendedor.
+ * @apiParam {String}   id_tab_preco      ID da tabela de preço.
+ * @apiParam {String}   id_plano_pag      ID do plano de pagamento.
+ * @apiParam {String}   [id_pos]          ID da posição inicial da pré-venda.
+ * @apiParam {String}   mod_venda         Modalidade da venda. 1-Normal 2-Futura ou 9-NFC-e
+ * @apiParam {Number}   vl_tabela         Valor total dos produtos (quantidade x preço de tabela).
+ * @apiParam {Number}   vl_itens          Valor total dos produtos.
+ * @apiParam {Number}   vl_desconto       Valor do desconto concedido nos produtos.
+ * @apiParam {Number}   vl_acrescimo      Valor do acréscimo sobre os produtos.
+ * @apiParam {Number}   vl_total          Valor total da venda.
+ * @apiParam {Number}   [vl_entrada]      Valor de entrada, caso a venda seja a prazo.
+ * @apiParam {Number}   [parcelas]        Quantidade de parcelas de pagamento, se a venda for a prazo.
+ * @apiParam {Number}   [vl_parcela]      Valor da parcela de pagamento, se a venda for a prazo.
+ * @apiParam {Date}     [data_entrega]    Data de entrega dos produtos.
+ * @apiParam {String}   tipo_entrega      Tipo de entrega. 0-Cliente retira ou 1-Loja entrega.
+ * @apiParam {String}   [id_end_entrega]  ID do endereço de entrega do cliente.
+ * @apiParam {String}   [id_loja_sep]     ID da loja de separação dos produtos.
+ * @apiParam {String}   [id_obra]         ID da obra.
+ * @apiParam {String}   [id_parceiro]     ID do parceiro (indicador).
+ * @apiParam {String}   [obs]             Observações referentes a venda.
+ * 
+ * 
+ * @apiSuccess {Boolean}  sucesso        Retorna sempre <code>true</code>.
+ * @apiSuccess {String}   id_loja        ID da loja onde a pré-venda foi gerada.
+ * @apiSuccess {String}   id_prevenda    Número da pré-venda gerada.   
+ * @apiSuccess {Number}   vl_total       Valor total da pré-venda gerada.    
+ * 
+ * @apiSuccessExample Sucesso:
+ *     HTTP/1.1 200 OK
+ *    {
+ *      "sucesso": true,
+ *      "id_loja": "01",
+ *      "id_prevenda": "112654",
+ *      "vl_total": 1543.45
+ *    }
+ *
+ * @apiUse ErroVendaNaoEncontrada
+ */

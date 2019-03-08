@@ -60,10 +60,34 @@ class RotaClientes {
 
 module.exports = (app) => new RotaClientes(app)
 
-
+/**
+ * @apiDefine ParamsCadastroCliente
+ * 
+ * @apiParam {String}   nome            Nome completo ou razão social do cliente.
+ * @apiParam {String}   [nome_fantasia] Nome fantasia do cliente, se pessoa jurídica.
+ * @apiParam {String}   [apelido]       Apelido do cliente.
+ * @apiParam {String}   pessoa          J - pessoa jurídica ou F - pessoa física.
+ * @apiParam {String}   cpf_cnpj        CPF ou CNPJ do cliente, sem formatação.
+ * @apiParam {String}   [insc_estadual] Número da Inscrição Estadual do cliente pessoa jurídica.
+ * @apiParam {String}   endereco        Endereço do cliente.
+ * @apiParam {String}   numero_end      Número do estabelecimento do cliente.
+ * @apiParam {String}   bairro          Bairro do cliente.
+ * @apiParam {String}   cidade          Cidade do cliente.
+ * @apiParam {String}   id_municipio    ID (código) do município do cliente conforme tabela do IBGE.
+ * @apiParam {String}   uf              Sigla da unidade federativa do cliente.
+ * @apiParam {String}   cep             CEP do cliente, sem formatação.
+ * @apiParam {String}   [ponto_ref]     Ponto de referência para o endereço do cliente.
+ * @apiParam {String}   [telefone]      Número do telefone de contato do cliente.
+ * @apiParam {String}   [celular]       Número do telefone celular do cliente.
+ * @apiParam {String}   [email]         E-mail do cliente.
+ * @apiParam {Date}     [data_nasc]     Data de nascimento do cliente.
+ * @apiParam {String}   [sexo]          M - Masculino ou F - Feminino. Obrigatório quando for pessoa física.
+ * @apiParam {Boolean}  consumidor      Indica se o cliente é consumidor final.
+ * 
+*/
 
 /**
- * @api {get} /clientes/:id  Consulta clientes.
+ * @api {get} /clientes/:id  Consultar clientes
  * @apiVersion 1.0.0
  * @apiName getClientes
  * @apiGroup Clientes
@@ -158,4 +182,74 @@ module.exports = (app) => new RotaClientes(app)
  * }
  *
  * @apiUse ErroRegistroNaoEncontrado
+ */
+
+
+ /**
+ * @api {post} /clientes  Incluir um novo cliente
+ * @apiVersion 1.0.0
+ * @apiName postClientes
+ * @apiGroup Clientes
+ *
+ * @apiHeader {String} Authorization Token obtido no login do usuário.
+ * 
+ * @apiUse ParamsCadastroCliente
+ * 
+ * @apiSuccess {Boolean}   sucesso       Retorna sempre <code>true</code>.
+ * @apiSuccess {String}    id_cliente    ID do cliente cadastrado.
+ *
+ * @apiSuccessExample Sucesso:
+ *     HTTP/1.1 200 OK
+ * {
+ *     "sucesso": true,
+ *     "id_cliente": "00037654",
+ * }
+ *
+ * @apiError {Number} status  Código de status HTTP.
+ * @apiError {String} message Mensagem de erro.
+ *
+ * @apiErrorExample Erro:
+ *     HTTP/1.1 500 
+ *     {
+ *       "status": 500,
+ *       "message": "O CPF ou CNPJ já consta no cadastro do cliente 00003739!"
+ *     }
+ */
+
+
+ /**
+ * @api {put} /clientes/:id  Alterar dados de um cliente
+ * @apiVersion 1.0.0
+ * @apiName puttClientes
+ * @apiGroup Clientes
+ *
+ * @apiHeader {String} Authorization Token obtido no login do usuário.
+ * 
+ * @apiParam {String} id  ID (Código) do cliente a ser atualizado.
+ * @apiUse ParamsCadastroCliente
+ * 
+ * @apiSuccess {Boolean}   sucesso       Retorna sempre <code>true</code>.
+ * @apiSuccess {String}    id_cliente    ID do cliente alterado.
+ *
+ * @apiSuccessExample Sucesso:
+ * 
+ *     HTTP/1.1 200 OK
+ * {
+ *     "sucesso": true,
+ *     "id_cliente": "00037654",
+ * }
+ *
+ * @apiError {Boolean}  sucesso   Retorna sempre <code>false</code>.
+ * @apiError {String[]} erros     Array cotendo uma lista de mensagens de erros.
+ *
+ * @apiErrorExample Erro:
+ *  HTTP/1.1 400 
+ *  {
+ *    "sucesso": false,
+ *    "erros": [
+ *       "CPF inválido.",
+ *       "Endereço não informado."
+ *    ]
+ *  }
+ * 
  */

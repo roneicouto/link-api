@@ -1,7 +1,7 @@
 /**
- * @api {post} /login Realiza o login de usuário na API
+ * @api {post} /login Login de usuário na API
  * @apiName PostLogin
- * @apiGroup Usuários
+ * @apiGroup Usuarios
  *
  * @apiParam {String} usuario Nome do usuário.
  * @apiParam {String} senha   Senha do usuário.
