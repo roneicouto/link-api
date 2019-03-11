@@ -43,40 +43,37 @@ module.exports = class PreVenda {
 
   findByPeriodo(filter) {
     this.reset()
-    if (! filter.page || filter.page <= 0) {
+    if (! filter.page || filter.page <= 0) 
       throw new createError.BadRequest('Página não informada!')
+    if (! filter.data_ini)
+      throw new createError.BadRequest('Data inicial não informada!')
+    if (! filter.data_fim)
+      throw new createError.BadRequest('Data final não informada!')
+    this.sql.page  = filter.page
+    this.sql.where = 'data >= $1 and data <= $2'
+    this.sql.params.push(filter.data_ini, filter.data_fim)
+    if (filter.id_loja) {
+      this.sql.params.push(filter.id_loja)
+      this.sql.where += ' and id_loja = $' + this.sql.params.length
     }
-    this.sql.page = filter.page
-    if (filter.data_ini) {
-      this.sql.params.push(filter.data_ini)
-      this.sql.where = 'data >= $' + this.sql.params.length
+    if (filter.id_cliente) {
+      this.sql.params.push(filter.id_cliente)
+      this.sql.where += ' and id_cliente = $' + this.sql.params.length
     }
-    if (filter.data_fim) {
-      this.sql.params.push(filter.data_fim)
-      this.sql.where = 'data <= $' + this.sql.params.length
+    if (filter.id_vendedor) {
+      this.sql.params.push(filter.id_vendedor)
+      this.sql.where += ' and id_vendedor ~ $' + this.sql.params.length
     }
-    if (filter.loja) {
-      this.sql.params.push(filter.loja)
-      this.sql.where = 'id_loja = $' + this.sql.params.length
-    }
-    if (filter.cliente) {
-      this.sql.params.push(filter.cliente)
-      this.sql.where = 'id_cliente = $' + this.sql.params.length
-    }
-    if (filter.vendedor) {
-      this.sql.params.push(filter.vend)
-      this.sql.where = 'id_vendedor ~ $' + this.sql.params.length
-    }
-    if (filter.plano) {
-      this.sql.params.push(filter.plano)
-      this.sql.where = 'id_plano_pag ~ $' + this.sql.params.length
+    if (filter.id_plano_pag) {
+      this.sql.params.push(filter.id_plano_pag)
+      this.sql.where += ' and id_plano_pag ~ $' + this.sql.params.length
     }
     if (filter.situacao) {
       this.sql.params.push(situacao)
       this.sql.where += ' and situacao ~ $' +this.sql.params.length
     }
-    if (filter.posicao) {
-      this.sql.params.push(posicao)
+    if (filter.id_posicao) {
+      this.sql.params.push(id_posicao)
       this.sql.where += ' and id_pos ~ $' +this.sql.params.length
     }
     this.sql.orderBy = 'data, id_loja, numero'
@@ -89,6 +86,7 @@ module.exports = class PreVenda {
                   (this.sql.where   ? ' WHERE '    + this.sql.where   : '') +
                   (this.sql.orderBy ? ' ORDER BY ' + this.sql.orderBy : '') +
                   (retArray ? '' : ' LIMIT 1')
+    console.log(cmdSql)
     let {rows} = await (this.sql.page > 0 ? new SqlPage(cmdSql, this.sql.params).getPage(this.sql.page)
                                           : db.query(cmdSql, this.sql.params))
     if (retArray) {
