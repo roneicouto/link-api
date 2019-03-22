@@ -13,7 +13,7 @@ app.set('path-api', '/api/v1')
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(morgan('tiny'))
-app.use(express.static('doc'))
+app.use(express.static('doc')) 
 
 consign().include('routes/login.js').then('routes/cadastros').into(app)
 
