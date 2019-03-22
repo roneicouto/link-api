@@ -20,6 +20,7 @@ consign().include('routes/login.js').then('routes/cadastros').into(app)
 app.use(utils.routeNotFound)
 app.use(utils.handlerError)
 
-app.listen(3000, () => {
-  console.log('Servidor rodando na porta 3000')
+port = process.env.SRV_PORT || 3000;
+app.listen(port, () => {
+  console.log('Servidor rodando na porta '+port)
 })

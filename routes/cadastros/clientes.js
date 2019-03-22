@@ -77,12 +77,13 @@ module.exports = (app) => new RotaClientes(app)
  * @apiParam {String}   uf              Sigla da unidade federativa do cliente.
  * @apiParam {String}   cep             CEP do cliente, sem formatação.
  * @apiParam {String}   [ponto_ref]     Ponto de referência para o endereço do cliente.
- * @apiParam {String}   [telefone]      Número do telefone de contato do cliente.
- * @apiParam {String}   [celular]       Número do telefone celular do cliente.
+ * @apiParam {String}   [telefone]      Número do telefone de contato do cliente no formato (99) 9999-9999 ou (99)99999-9999.
+ * @apiParam {String}   [celular]       Número do telefone celular do cliente no formato (99)99999-9999.
  * @apiParam {String}   [email]         E-mail do cliente.
  * @apiParam {Date}     [data_nasc]     Data de nascimento do cliente.
  * @apiParam {String}   [sexo]          M - Masculino ou F - Feminino. Obrigatório quando for pessoa física.
  * @apiParam {Boolean}  consumidor      Indica se o cliente é consumidor final.
+ * @apiParam {String}   [crt]           Código de Regime de Tributação. Obrigatório quando for pessoa jurídica.
  * 
 */
 
