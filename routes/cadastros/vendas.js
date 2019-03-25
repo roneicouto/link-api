@@ -4,6 +4,7 @@ class RotaVenda {
   
   constructor(app) {
     this.app = app
+    this.setRouteAlterarTabPreco()    
     this.setRoutePostItem()
     this.setRoutePutItem()
     this.setRouteDeleteItem()
@@ -73,7 +74,22 @@ class RotaVenda {
     })
   }
 
+  setRouteAlterarTabPreco() {
+    const route = this.app.route(this.app.get('path-api') + '/venda-itens/precos')
+    route.put((req, res, next) => {
+
+      req.body.id_loja = req.login.idLoja
+      req.body.id_usuario = req.login.usuario.data.id
+
+      Venda.mudarTabelaPreco(req.body)
+        .then(result => res.status(result.erros ? 400 : 200).json(result))
+        .catch(error => next(error))
+
+    })    
+  }
+
 }
+
 
 module.exports = (app) => new RotaVenda(app)
 
@@ -109,7 +125,6 @@ module.exports = (app) => new RotaVenda(app)
  * @apiParam {Boolean}  fracionado       Indica se o produto foi vendido em undidades fracionadas.
  * @apiParam {Number}   quantidade       Quantidade vendida do produto.
  * @apiParam {Number}   preco            Preço unitário do produto.
- * @apiParam {Number}   preco_tab        Preço de tabela do produto.
  * @apiParam {Number}   pdesc            Percentual de desconto concedido no produto.
  * @apiParam {Boolean}  promocao         Indica se o produto foi vendido com preço de promoção.
  * 
@@ -147,7 +162,6 @@ module.exports = (app) => new RotaVenda(app)
  * @apiParam {Boolean}  fracionado       Indica se o produto foi vendido em undidades fracionadas.
  * @apiParam {Number}   quantidade       Quantidade vendida do produto.
  * @apiParam {Number}   preco            Preço unitário do produto.
- * @apiParam {Number}   preco_tab        Preço de tabela do produto.
  * @apiParam {Number}   pdesc            Percentual de desconto concedido no produto.
  * @apiParam {Boolean}  promocao         Indica se o produto foi vendido com preço de promoção.
  * 
@@ -163,6 +177,31 @@ module.exports = (app) => new RotaVenda(app)
  *      "id_venda": 13,
  *      "id_item": 2,
  *      "vl_total": 192.55,
+ *    }
+ *
+ * @apiUse ErroVendaNaoEncontrada
+ */
+
+
+ /**
+ * @api {put} /venda-itens/precos  Alterar a tabela de preço dos itens da venda
+ * @apiVersion 1.0.0
+ * @apiName putVendasItensPrecos
+ * @apiGroup Vendas
+ *
+ * @apiHeader {String} Authorization 'Bearer ' + Token obtido no login do usuário.
+ *
+ * @apiParam {String}   id_venda         ID da venda. 
+ * @apiParam {String}   id_tab_preco     ID (código) da nova tabela de preços.
+ * 
+ * @apiSuccess {Boolean}  sucesso        Retorna sempre <code>true</code>.
+ * @apiSuccess {Number}   vl_total       Valor total dos itens da venda atualizados conforme a nova tabela de preços.
+ *
+ * @apiSuccessExample Sucesso:
+ *     HTTP/1.1 200 OK
+ *    {
+ *      "sucesso": true,
+ *      "vl_total": 1278.65,
  *    }
  *
  * @apiUse ErroVendaNaoEncontrada

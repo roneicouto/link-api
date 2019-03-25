@@ -835,14 +835,14 @@
             "type": "String",
             "optional": true,
             "field": "telefone",
-            "description": "<p>Número do telefone de contato do cliente.</p>"
+            "description": "<p>Número do telefone de contato do cliente no formato (99) 9999-9999 ou (99)99999-9999.</p>"
           },
           {
             "group": "Parameter",
             "type": "String",
             "optional": true,
             "field": "celular",
-            "description": "<p>Número do telefone celular do cliente.</p>"
+            "description": "<p>Número do telefone celular do cliente no formato (99)99999-9999.</p>"
           },
           {
             "group": "Parameter",
@@ -871,6 +871,13 @@
             "optional": false,
             "field": "consumidor",
             "description": "<p>Indica se o cliente é consumidor final.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "crt",
+            "description": "<p>Código de Regime de Tributação. Obrigatório quando for pessoa jurídica.</p>"
           }
         ]
       }
@@ -1009,14 +1016,14 @@
             "type": "String",
             "optional": true,
             "field": "telefone",
-            "description": "<p>Número do telefone de contato do cliente.</p>"
+            "description": "<p>Número do telefone de contato do cliente no formato (99) 9999-9999 ou (99)99999-9999.</p>"
           },
           {
             "group": "Parameter",
             "type": "String",
             "optional": true,
             "field": "celular",
-            "description": "<p>Número do telefone celular do cliente.</p>"
+            "description": "<p>Número do telefone celular do cliente no formato (99)99999-9999.</p>"
           },
           {
             "group": "Parameter",
@@ -1045,6 +1052,13 @@
             "optional": false,
             "field": "consumidor",
             "description": "<p>Indica se o cliente é consumidor final.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "crt",
+            "description": "<p>Código de Regime de Tributação. Obrigatório quando for pessoa jurídica.</p>"
           }
         ]
       }
@@ -5949,13 +5963,6 @@
             "group": "Parameter",
             "type": "Number",
             "optional": false,
-            "field": "preco_tab",
-            "description": "<p>Preço de tabela do produto.</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Number",
-            "optional": false,
             "field": "pdesc",
             "description": "<p>Percentual de desconto concedido no produto.</p>"
           },
@@ -6123,13 +6130,6 @@
             "group": "Parameter",
             "type": "Number",
             "optional": false,
-            "field": "preco_tab",
-            "description": "<p>Preço de tabela do produto.</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Number",
-            "optional": false,
             "field": "pdesc",
             "description": "<p>Percentual de desconto concedido no produto.</p>"
           },
@@ -6180,6 +6180,103 @@
         {
           "title": "Sucesso:",
           "content": " HTTP/1.1 200 OK\n{\n  \"sucesso\": true,\n  \"id_venda\": 13,\n  \"id_item\": 2,\n  \"vl_total\": 192.55,\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "./routes/cadastros/vendas.js",
+    "groupTitle": "Vendas",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "Boolean",
+            "optional": false,
+            "field": "sucesso",
+            "description": "<p>Retorna sempre <code>false</code>.</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Mensagem de erro.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Erro:",
+          "content": "HTTP/1.1 404 \n{\n  \"sucesso\": false,\n  \"message\": \"O ID 43 da venda não existe!\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "put",
+    "url": "/venda-itens/precos",
+    "title": "Alterar a tabela de preço dos itens da venda",
+    "version": "1.0.0",
+    "name": "putVendasItensPrecos",
+    "group": "Vendas",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Authorization",
+            "description": "<p>'Bearer ' + Token obtido no login do usuário.</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "id_venda",
+            "description": "<p>ID da venda.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "id_tab_preco",
+            "description": "<p>ID (código) da nova tabela de preços.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Boolean",
+            "optional": false,
+            "field": "sucesso",
+            "description": "<p>Retorna sempre <code>true</code>.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "vl_total",
+            "description": "<p>Valor total dos itens da venda atualizados conforme a nova tabela de preços.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Sucesso:",
+          "content": " HTTP/1.1 200 OK\n{\n  \"sucesso\": true,\n  \"vl_total\": 1278.65,\n}",
           "type": "json"
         }
       ]

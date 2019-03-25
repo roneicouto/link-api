@@ -117,4 +117,28 @@ module.exports = class Venda {
       aMsg.push('ID do usuário não informado.')
   }
 
+
+  static async mudarTabelaPreco(venda) {
+    let msg = []
+    venda.id_venda = parseInt(venda.id_venda || 0)
+
+    Venda.validar(venda)
+
+    if (! venda.id_tab_preco)
+      msg.push('ID da tabela de preço não informado.')
+
+    if (msg.length > 0)
+      return {sucesso: false, erros: msg}
+
+    let sql = 'SELECT api_venda_mudar_tab_preco( $1 ) as result'
+
+    let {rows} = await db.query(sql, [JSON.stringify(venda)])
+
+    return {
+      sucesso: true,
+      ...JSON.parse(rows[0].result)
+    }
+
+  }
+
 }
