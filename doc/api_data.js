@@ -5888,6 +5888,341 @@ define({ "api": [
     }
   },
   {
+    "type": "get",
+    "url": "/venda-itens/:id",
+    "title": "Consultar um ou mais itens de uma venda em andamento.",
+    "version": "1.0.0",
+    "name": "getVendaItens",
+    "group": "Vendas",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Authorization",
+            "description": "<p>'Bearer ' + Token obtido no login do usuário.</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "id",
+            "description": "<p>ID do item da venda. Se não for informado, a requisição retornará um array com todos os itens da venda.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "id_venda",
+            "description": "<p>ID da venda em andamento.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Boolean",
+            "optional": false,
+            "field": "sucesso",
+            "description": "<p>Sucesso da requisição.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object[]",
+            "optional": true,
+            "field": "itens",
+            "description": "<p>Array contendo uma lista de objetos JSON dos itens da venda.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object",
+            "optional": true,
+            "field": "item",
+            "description": "<p>Objeto JSON do item da venda.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "item.id_item",
+            "description": "<p>ID do item.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "item.id_produto",
+            "description": "<p>ID do produto ou serviço.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "item.descricao",
+            "description": "<p>Descrição do produto ou serviço.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "item.pos_grade",
+            "description": "<p>Posição de grade do produto.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "item.complemento",
+            "description": "<p>Descrição complementar do produto.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Boolean",
+            "optional": false,
+            "field": "item.fracionado",
+            "description": "<p>Indica se o produto foi vendido em unidade fracionada.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "item.unidade",
+            "description": "<p>Unidade de venda do produto.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "item.quantidade",
+            "description": "<p>Quantidade do item.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "item.preco",
+            "description": "<p>Preço unitário do item.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "item.pdesc",
+            "description": "<p>Percentual de desconto do item.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "item.vl_total",
+            "description": "<p>Valor total do item.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Boolean",
+            "optional": false,
+            "field": "item.promocao",
+            "description": "<p>Indica se o item foi vendido com preço de promoção.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "item.estoque",
+            "description": "<p>Estoque do produto que foi reservado.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "item.id_loja",
+            "description": "<p>ID da loja que fez a reserva de estoque do produto.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Sucesso:",
+          "content": "  HTTP/1.1 200 OK\n {\n   \"sucesso\": true,\n    \"itens\": [\n        {\n            \"id_item\": 1,\n            \"id_produto\": \"07405\",\n            \"descricao\": \"5047 CONDU TAMPA CEGA 012/34\",\n            \"pos_grade\": \"\",\n            \"complemento\": \"\",\n            \"fracionado\": false,\n            \"unidade\": \"CXA\",\n            \"quantidade\": 2,\n            \"preco\": 211.2,\n            \"pdesc\": 0,\n            \"vl_total\": 422.4,\n            \"promocao\": false,\n            \"estoque\": \"L\",\n            \"id_loja\": \"00\"\n        },\n        {\n            \"id_item\": 2,\n            \"id_produto\": \"35678\",\n            \"descricao\": \"ROSCA PRD 15ACE\",\n            \"pos_grade\": \"\",\n            \"complemento\": \"\",\n            \"fracionado\": false,\n            \"unidade\": \"PCA\",\n            \"quantidade\": 3,\n            \"preco\": 60,\n            \"pdesc\": 0,\n            \"vl_total\": 180,\n            \"promocao\": false,\n            \"estoque\": \"L\",\n            \"id_loja\": \"00\"\n        }\n    ]\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "./routes/cadastros/vendas.js",
+    "groupTitle": "Vendas",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "Boolean",
+            "optional": false,
+            "field": "sucesso",
+            "description": "<p>Retorna sempre <code>false</code>.</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Mensagem de erro.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Erro:",
+          "content": "HTTP/1.1 404 \n{\n  \"sucesso\": false,\n  \"message\": \"O ID 43 da venda não existe!\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
+    "url": "/vendas-temp",
+    "title": "Consultar as vendas temporárias em andamento.",
+    "version": "1.0.0",
+    "name": "getVendasTemp",
+    "group": "Vendas",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Authorization",
+            "description": "<p>'Bearer ' + Token obtido no login do usuário.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Boolean",
+            "optional": false,
+            "field": "sucesso",
+            "description": "<p>Sucesso da requisição.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object[]",
+            "optional": false,
+            "field": "vendas",
+            "description": "<p>Array contendo uma lista de objetos JSON das vendas em andamento.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "vendas.id_venda",
+            "description": "<p>ID da venda.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Date",
+            "optional": false,
+            "field": "vendas.data_abert",
+            "description": "<p>Data da abertura da venda.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "vendas.hora_abert",
+            "description": "<p>Hora da abertura da venda.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "vendas.id_loja",
+            "description": "<p>ID da loja.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "vendas.id_usuario",
+            "description": "<p>ID do usuário.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "vendas.nome",
+            "description": "<p>Nome de identificação da venda.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "vendas.id_tab_preco",
+            "description": "<p>ID da tabela de preço.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "vendas.vl_total",
+            "description": "<p>Valor total dos itens da venda.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Sucesso:",
+          "content": " HTTP/1.1 200 OK\n{\n  \"sucesso\": true,\n  \"vendas\": [\n      {\n        \"id_venda\": 8,\n        \"data_abert\": \"2019-03-05\",\n        \"hora_abert\": \"10:00:00\",\n        \"id_loja\": \"03\",\n        \"id_usuario\": \"JNS\",\n        \"nome\": \"JOAO MARTINS\",\n        \"id_tab_preco\": \"01\",\n        \"vl_total\": 1432.58\n      },\n      {\n        \"id_venda\": 12,\n        \"data_abert\": \"2019-03-05\",\n        \"hora_abert\": \"10:30:00\",\n        \"id_loja\": \"03\",\n        \"id_usuario\": \"JNS\",\n        \"nome\": \"FERNANDA TORRES\",\n        \"id_tab_preco\": \"01\",\n        \"vl_total\": 535.65\n      }\n  ]\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "./routes/cadastros/vendas.js",
+    "groupTitle": "Vendas",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "Boolean",
+            "optional": false,
+            "field": "sucesso",
+            "description": "<p>Retorna sempre <code>false</code>.</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Mensagem de erro.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Erro:",
+          "content": "HTTP/1.1 404 \n{\n  \"sucesso\": false,\n  \"message\": \"O ID 43 da venda não existe!\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
     "type": "post",
     "url": "/venda-itens",
     "title": "Incluir novo produto na venda",
@@ -5916,6 +6251,13 @@ define({ "api": [
             "optional": true,
             "field": "id_venda",
             "description": "<p>ID da venda. Se não for informado, será gerada uma nova venda.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "nome",
+            "description": "<p>Nome para identificação da venda (30 caracteres), que pode ser informado apenas no primeiro item.</p>"
           },
           {
             "group": "Parameter",

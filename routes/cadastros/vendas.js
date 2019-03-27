@@ -135,6 +135,7 @@ module.exports = (app) => new RotaVenda(app)
  * @apiHeader {String} Authorization 'Bearer ' + Token obtido no login do usuário.
  * 
  * @apiParam {String}   [id_venda]       ID da venda. Se não for informado, será gerada uma nova venda.
+ * @apiParam {String}   [nome]           Nome para identificação da venda (30 caracteres), que pode ser informado apenas no primeiro item.
  * @apiParam {String}   id_produto       ID (código) do produto.
  * @apiParam {String}   [complemento]    Descrição complementar do produto.
  * @apiParam {String}   [posgrade]       Posição da grade do produto, se houver.
@@ -264,6 +265,129 @@ module.exports = (app) => new RotaVenda(app)
  *    {
  *      "sucesso": true,
  *    }
+ *
+ * @apiUse ErroVendaNaoEncontrada
+ */
+
+ /**
+ * @api {get} /vendas-temp  Consultar as vendas temporárias em andamento.
+ * @apiVersion 1.0.0
+ * @apiName getVendasTemp
+ * @apiGroup Vendas
+ *
+ * @apiHeader {String} Authorization 'Bearer ' + Token obtido no login do usuário.
+ *
+ * @apiSuccess {Boolean}  sucesso             Sucesso da requisição.
+ * @apiSuccess {Object[]} vendas              Array contendo uma lista de objetos JSON das vendas em andamento.
+ * @apiSuccess {Number}   vendas.id_venda     ID da venda.
+ * @apiSuccess {Date}     vendas.data_abert   Data da abertura da venda.
+ * @apiSuccess {String}   vendas.hora_abert   Hora da abertura da venda.
+ * @apiSuccess {String}   vendas.id_loja      ID da loja.
+ * @apiSuccess {String}   vendas.id_usuario   ID do usuário.
+ * @apiSuccess {String}   vendas.nome         Nome de identificação da venda.
+ * @apiSuccess {String}   vendas.id_tab_preco ID da tabela de preço.
+ * @apiSuccess {Number}   vendas.vl_total     Valor total dos itens da venda.
+ *
+ * @apiSuccessExample Sucesso:
+ *     HTTP/1.1 200 OK
+ *    {
+ *      "sucesso": true,
+ *      "vendas": [
+ *          {
+ *            "id_venda": 8,
+ *            "data_abert": "2019-03-05",
+ *            "hora_abert": "10:00:00",
+ *            "id_loja": "03",
+ *            "id_usuario": "JNS",
+ *            "nome": "JOAO MARTINS",
+ *            "id_tab_preco": "01",
+ *            "vl_total": 1432.58
+ *          },
+ *          {
+ *            "id_venda": 12,
+ *            "data_abert": "2019-03-05",
+ *            "hora_abert": "10:30:00",
+ *            "id_loja": "03",
+ *            "id_usuario": "JNS",
+ *            "nome": "FERNANDA TORRES",
+ *            "id_tab_preco": "01",
+ *            "vl_total": 535.65
+ *          }
+ *      ]
+ *    }
+ *
+ * @apiUse ErroVendaNaoEncontrada
+ */
+
+ 
+ /**
+ * @api {get} /venda-itens/:id  Consultar um ou mais itens de uma venda em andamento.
+ * @apiVersion 1.0.0
+ * @apiName getVendaItens
+ * @apiGroup Vendas
+ *
+ * @apiHeader {String} Authorization 'Bearer ' + Token obtido no login do usuário.
+ *
+ * @apiParam {String}   [id]             ID do item da venda. Se não for informado, a requisição retornará um array com todos os itens da venda.
+ * @apiParam {String}   id_venda         ID da venda em andamento.
+ * 
+ * @apiSuccess  {Boolean}  sucesso             Sucesso da requisição.
+ * @apiSuccess  {Object[]} [itens]             Array contendo uma lista de objetos JSON dos itens da venda.
+ * @apiSuccess  {Object}   [item]              Objeto JSON do item da venda.
+ * @apiSuccess  {Number}   item.id_item        ID do item.
+ * @apiSuccess  {String}   item.id_produto     ID do produto ou serviço.
+ * @apiSuccess  {String}   item.descricao      Descrição do produto ou serviço.
+ * @apiSuccess  {String}   item.pos_grade      Posição de grade do produto.
+ * @apiSuccess  {String}   item.complemento    Descrição complementar do produto.
+ * @apiSuccess  {Boolean}  item.fracionado     Indica se o produto foi vendido em unidade fracionada.
+ * @apiSuccess  {String}   item.unidade        Unidade de venda do produto.
+ * @apiSuccess  {Number}   item.quantidade     Quantidade do item.
+ * @apiSuccess  {Number}   item.preco          Preço unitário do item.
+ * @apiSuccess  {Number}   item.pdesc          Percentual de desconto do item.
+ * @apiSuccess  {Number}   item.vl_total       Valor total do item.
+ * @apiSuccess  {Boolean}  item.promocao       Indica se o item foi vendido com preço de promoção.
+ * @apiSuccess  {String}   item.estoque        Estoque do produto que foi reservado.
+ * @apiSuccess  {String}   item.id_loja        ID da loja que fez a reserva de estoque do produto.
+ * 
+ * @apiSuccessExample Sucesso:
+ *     HTTP/1.1 200 OK
+ *    {
+ *      "sucesso": true,
+ *       "itens": [
+ *           {
+ *               "id_item": 1,
+ *               "id_produto": "07405",
+ *               "descricao": "5047 CONDU TAMPA CEGA 012/34",
+ *               "pos_grade": "",
+ *               "complemento": "",
+ *               "fracionado": false,
+ *               "unidade": "CXA",
+ *               "quantidade": 2,
+ *               "preco": 211.2,
+ *               "pdesc": 0,
+ *               "vl_total": 422.4,
+ *               "promocao": false,
+ *               "estoque": "L",
+ *               "id_loja": "00"
+ *           },
+ *           {
+ *               "id_item": 2,
+ *               "id_produto": "35678",
+ *               "descricao": "ROSCA PRD 15ACE",
+ *               "pos_grade": "",
+ *               "complemento": "",
+ *               "fracionado": false,
+ *               "unidade": "PCA",
+ *               "quantidade": 3,
+ *               "preco": 60,
+ *               "pdesc": 0,
+ *               "vl_total": 180,
+ *               "promocao": false,
+ *               "estoque": "L",
+ *               "id_loja": "00"
+ *           }
+ *       ]
+ *   }
  *
  * @apiUse ErroVendaNaoEncontrada
  */
