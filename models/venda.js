@@ -88,6 +88,29 @@ module.exports = class Venda {
   }
 
 
+  static async getVendas(oJson) {
+
+    let msg = []
+
+    if (! oJson.id_loja)
+      msg.push('ID da loja não informado.')    
+    if (! oJson.id_usuario)
+      msg.push('ID do usuário não informado.')
+
+    if (msg.length) 
+      return {sucesso: false, erros: msg}
+
+    let sql = `SELECT * 
+               FROM vs_api_vendas_temp 
+               WHERE id_loja = $1 and id_usuario = $2 
+               ORDER BY id_venda`
+    let {rows} = await db.query(sql, [oJson.id_loja, oJson.id_usuario])
+
+    return {sucesso: true, vendas: rows}
+
+  }
+
+
   static async saveItem(item) {
 
     let msg = []

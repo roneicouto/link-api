@@ -9,6 +9,7 @@ class RotaVenda {
     this.setRoutePutItem()
     this.setRouteDeleteItem()
     this.setRouteGetItem()
+    this.setRouteGetVendasTemp()
   }
 
 
@@ -73,6 +74,21 @@ class RotaVenda {
 
     })
   }
+
+
+  setRouteGetVendasTemp() {
+    const route = this.app.route(this.app.get('path-api') + '/vendas-temp')    
+    route.get((req, res, next) => {
+
+      req.body.id_loja    = req.login.idLoja
+      req.body.id_usuario = req.login.usuario.data.id
+      Venda.getVendas(req.body)
+        .then(result => res.status(result.sucesso ? 200 : 400).json(result))
+        .catch(error => next(error))
+
+    })
+  }
+
 
   setRouteAlterarTabPreco() {
     const route = this.app.route(this.app.get('path-api') + '/venda-itens/precos')
