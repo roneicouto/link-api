@@ -54,7 +54,7 @@ module.exports = class Venda {
     Venda.validar(item, msg)
 
     if (! msg.length) {
-      
+
       let sql = 'SELECT * from vs_api_vendas_temp_itens WHERE id_venda = $1'
       let params = [item.id_venda]
 
@@ -65,12 +65,21 @@ module.exports = class Venda {
 
       let {rows} = await db.query(sql, params)
 
-      if (! rows.length) 
-        msg.push('Não há itens na venda informada!')
-      else if (item.id_item)
+      if (item.id_item) {
+        
+        if (! rows.length) 
+          msg.push('O item informado não existe na venda!')
+
         return {sucesso: true, item: rows[0]}
-      else
+
+      } else {
+
+        if (! rows.length) 
+          msg.push('Não há itens na venda informada!')
+
         return {sucesso: true, itens: rows}
+        
+      }
 
     }
 
