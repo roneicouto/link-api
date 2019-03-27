@@ -45,6 +45,40 @@ module.exports = class Venda {
   }
 
 
+  static async getItens(item) {
+
+    let msg = []
+    item.id_item  = parseInt(item.id_item  || 0)
+    item.id_venda = parseInt(item.id_venda || 0)
+
+    Venda.validar(item, msg)
+
+    if (! msg.length) {
+      
+      let sql = 'SELECT * from vs_api_vendas_temp_itens WHERE id_venda = $1'
+      let params = [item.id_venda]
+
+      if (item.id_item) {
+        sql += ' and id_item = $2 ORDER BY id_item'
+        params.push(item.id_item)
+      }
+
+      let {rows} = await db.query(sql, params)
+
+      if (! rows.length) 
+        msg.push('Não há itens na venda informada!')
+      else if (item.id_item)
+        return {sucesso: true, item: rows[0]}
+      else
+        return {sucesso: true, itens: rows}
+
+    }
+
+    return {sucesso: false, erros: msg}
+
+  }
+
+
   static async saveItem(item) {
 
     let msg = []
