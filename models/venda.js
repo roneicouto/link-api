@@ -70,14 +70,14 @@ module.exports = class Venda {
         if (rows.length) 
           return {sucesso: true, item: rows[0]}
         
-        msg.push('O item informado não existe na venda!')
+        msg.push('O item '+item.id_item+' não existe na venda '+item.id_venda+'.')
 
       } else {
 
         if (rows.length) 
           return {sucesso: true, itens: rows}
         
-        msg.push('Não há itens na venda informada!')
+        msg.push('Não há itens lançados na venda '+item.id_venda+'.')
 
       }
 

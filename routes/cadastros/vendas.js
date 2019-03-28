@@ -8,15 +8,17 @@ class RotaVenda {
     this.setRoutePostItem()
     this.setRoutePutItem()
     this.setRouteDeleteItem()
+    this.setRouteDeleteVenda()
     this.setRouteGetItem()
-    this.setRouteGetVendasTemp()
+    this.setRouteGetVendas()
   }
 
 
   setRoutePostItem() {
-    const route = this.app.route(this.app.get('path-api') + '/venda-itens')    
+    const route = this.app.route(this.app.get('path-api') + '/vendas/:id_venda?/itens')    
     route.post((req, res, next) => {
 
+      req.body.id_venda   = req.params.id_venda      
       req.body.id_loja    = req.login.idLoja
       req.body.id_usuario = req.login.usuario.data.id
       Venda.saveItem(req.body)
@@ -28,10 +30,11 @@ class RotaVenda {
 
 
   setRoutePutItem() {
-    const route = this.app.route(this.app.get('path-api') + '/venda-itens/:id')
+    const route = this.app.route(this.app.get('path-api') + '/vendas/:id_venda/itens/:id_item')
     route.put((req, res, next) => {
 
-      req.body.id_item    = req.params.id
+      req.body.id_venda   = req.params.id_venda
+      req.body.id_item    = req.params.id_item
       req.body.id_loja    = req.login.idLoja
       req.body.id_usuario = req.login.usuario.data.id      
       Venda.saveItem(req.body)
@@ -43,16 +46,31 @@ class RotaVenda {
 
 
   setRouteDeleteItem() {
-    const route = this.app.route(this.app.get('path-api') + '/venda-itens/:id?')    
+    const route = this.app.route(this.app.get('path-api') + '/vendas/:id_venda/itens/:id_item')    
     route.delete((req, res, next) => {
 
-      req.body.id_item    = req.params.id
+      req.body.id_venda   = req.params.id_venda      
+      req.body.id_item    = req.params.id_item
       req.body.id_loja    = req.login.idLoja
       req.body.id_usuario = req.login.usuario.data.id            
 
-      let promise = req.params.id ? Venda.deleteItem(req.body) : Venda.delete(req.body)
+      Venda.deleteItem(req.body) 
+        .then(result => res.status(result.sucesso ? 200 : 400).json(result))
+        .catch(error => next(error))
 
-      promise
+    })
+  }
+
+
+  setRouteDeleteVenda() {
+    const route = this.app.route(this.app.get('path-api') + '/vendas/:id_venda')    
+    route.delete((req, res, next) => {
+
+      req.body.id_venda   = req.params.id_venda      
+      req.body.id_loja    = req.login.idLoja
+      req.body.id_usuario = req.login.usuario.data.id            
+
+      Venda.delete(req.body)
         .then(result => res.status(result.sucesso ? 200 : 400).json(result))
         .catch(error => next(error))
 
@@ -61,10 +79,11 @@ class RotaVenda {
 
 
   setRouteGetItem() {
-    const route = this.app.route(this.app.get('path-api') + '/venda-itens/:id?')    
+    const route = this.app.route(this.app.get('path-api') + '/vendas/:id_venda/itens/:id_item?')    
     route.get((req, res, next) => {
 
-      req.body.id_item    = req.params.id
+      req.body.id_venda   = req.params.id_venda
+      req.body.id_item    = req.params.id_item
       req.body.id_loja    = req.login.idLoja
       req.body.id_usuario = req.login.usuario.data.id            
 
@@ -76,8 +95,8 @@ class RotaVenda {
   }
 
 
-  setRouteGetVendasTemp() {
-    const route = this.app.route(this.app.get('path-api') + '/vendas-temp')    
+  setRouteGetVendas() {
+    const route = this.app.route(this.app.get('path-api') + '/vendas')    
     route.get((req, res, next) => {
 
       req.body.id_loja    = req.login.idLoja
@@ -91,10 +110,11 @@ class RotaVenda {
 
 
   setRouteAlterarTabPreco() {
-    const route = this.app.route(this.app.get('path-api') + '/venda-itens/precos')
+    const route = this.app.route(this.app.get('path-api') + '/vendas/:id_venda/precos')
     route.put((req, res, next) => {
 
-      req.body.id_loja = req.login.idLoja
+      req.body.id_venda   = req.params.id_venda
+      req.body.id_loja    = req.login.idLoja
       req.body.id_usuario = req.login.usuario.data.id
 
       Venda.mudarTabelaPreco(req.body)
