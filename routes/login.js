@@ -49,6 +49,10 @@ module.exports = (app) => {
 
   app.use(app.get('path-api'), (req, res, next) => {
     let token = req.headers.authorization || req.body.token || req.query.token
+    if ( /^\/lojas/.test(req.path) ) {
+      next()
+      return
+    }
     if (!token) {
       throw new createError.BadRequest('Falta informar o token!')
     }

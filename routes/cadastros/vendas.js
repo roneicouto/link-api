@@ -147,9 +147,9 @@ module.exports = (app) => new RotaVenda(app)
 
 
 /**
- * @api {post} /venda-itens  Incluir novo produto na venda
+ * @api {post} /vendas/:id_venda/itens  Incluir novo produto na venda
  * @apiVersion 1.0.0
- * @apiName postVendaItens
+ * @apiName postVendasItens
  * @apiGroup Vendas
  *
  * @apiHeader {String} Authorization 'Bearer ' + Token obtido no login do usuário.
@@ -184,15 +184,15 @@ module.exports = (app) => new RotaVenda(app)
 
 
  /**
- * @api {put} /venda-itens/:id  Alterar um produto na venda
+ * @api {put} /vendas/:id_venda/itens/:id_item  Alterar um produto na venda
  * @apiVersion 1.0.0
  * @apiName putVendasItens
  * @apiGroup Vendas
  *
  * @apiHeader {String} Authorization 'Bearer ' + Token obtido no login do usuário.
  *
- * @apiParam {String}   id               ID do item da venda a ser alterado.  
  * @apiParam {String}   id_venda         ID da venda. 
+ * @apiParam {String}   id_item          ID do item da venda a ser alterado.  
  * @apiParam {String}   id_produto       ID (código) do produto.
  * @apiParam {String}   [complemento]    Descrição complementar do produto.
  * @apiParam {String}   [posgrade]       Posição da grade do produto, se houver.
@@ -221,7 +221,7 @@ module.exports = (app) => new RotaVenda(app)
 
 
  /**
- * @api {put} /venda-itens/precos  Alterar a tabela de preço dos itens da venda
+ * @api {put} /vendas/:id_venda/precos  Alterar a tabela de preços da venda
  * @apiVersion 1.0.0
  * @apiName putVendasItensPrecos
  * @apiGroup Vendas
@@ -246,15 +246,15 @@ module.exports = (app) => new RotaVenda(app)
 
 
  /**
- * @api {delete} /venda-itens/:id  Excluir um produto da venda
+ * @api {delete} /vendas/:id_venda/itens/:id_item  Excluir um item da venda
  * @apiVersion 1.0.0
  * @apiName deleteVendasItens
  * @apiGroup Vendas
  *
  * @apiHeader {String} Authorization 'Bearer ' + Token obtido no login do usuário.
  *
- * @apiParam {String}   id               ID do item da venda a ser excluido.
  * @apiParam {String}   id_venda         ID da venda. 
+ * @apiParam {String}   id               ID do item da venda a ser excluido.
  * 
  * @apiSuccess {Boolean}  sucesso        Retorna sempre <code>true</code>.
  *
@@ -269,7 +269,7 @@ module.exports = (app) => new RotaVenda(app)
 
 
  /**
- * @api {delete} /venda-itens  Excluir todos os itens de uma venda
+ * @api {delete} /vendas/:id_venda  Excluir uma venda
  * @apiVersion 1.0.0
  * @apiName deleteVendas
  * @apiGroup Vendas
@@ -290,7 +290,7 @@ module.exports = (app) => new RotaVenda(app)
  */
 
  /**
- * @api {get} /vendas-temp  Consultar as vendas temporárias em andamento.
+ * @api {get} /vendas  Consultar as vendas em andamento
  * @apiVersion 1.0.0
  * @apiName getVendasTemp
  * @apiGroup Vendas
@@ -341,15 +341,15 @@ module.exports = (app) => new RotaVenda(app)
 
  
  /**
- * @api {get} /venda-itens/:id  Consultar um ou mais itens de uma venda em andamento.
+ * @api {get} /vendas/:id_venda/itens/:id_item  Consultar um ou mais itens de uma venda
  * @apiVersion 1.0.0
  * @apiName getVendaItens
  * @apiGroup Vendas
  *
  * @apiHeader {String} Authorization 'Bearer ' + Token obtido no login do usuário.
  *
- * @apiParam {String}   [id]             ID do item da venda. Se não for informado, a requisição retornará um array com todos os itens da venda.
  * @apiParam {String}   id_venda         ID da venda em andamento.
+ * @apiParam {String}   [id_item]        ID do item da venda. Se não for informado, a requisição retornará um array com todos os itens da venda.
  * 
  * @apiSuccess  {Boolean}  sucesso             Sucesso da requisição.
  * @apiSuccess  {Object[]} [itens]             Array contendo uma lista de objetos JSON dos itens da venda.

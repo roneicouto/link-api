@@ -5007,8 +5007,8 @@
   },
   {
     "type": "delete",
-    "url": "/venda-itens",
-    "title": "Excluir todos os itens de uma venda",
+    "url": "/vendas/:id_venda",
+    "title": "Excluir uma venda",
     "version": "1.0.0",
     "name": "deleteVendas",
     "group": "Vendas",
@@ -5090,8 +5090,8 @@
   },
   {
     "type": "delete",
-    "url": "/venda-itens/:id",
-    "title": "Excluir um produto da venda",
+    "url": "/vendas/:id_venda/itens/:id_item",
+    "title": "Excluir um item da venda",
     "version": "1.0.0",
     "name": "deleteVendasItens",
     "group": "Vendas",
@@ -5115,15 +5115,15 @@
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "id",
-            "description": "<p>ID do item da venda a ser excluido.</p>"
+            "field": "id_venda",
+            "description": "<p>ID da venda.</p>"
           },
           {
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "id_venda",
-            "description": "<p>ID da venda.</p>"
+            "field": "id",
+            "description": "<p>ID do item da venda a ser excluido.</p>"
           }
         ]
       }
@@ -5889,8 +5889,8 @@
   },
   {
     "type": "get",
-    "url": "/venda-itens/:id",
-    "title": "Consultar um ou mais itens de uma venda em andamento.",
+    "url": "/vendas/:id_venda/itens/:id_item",
+    "title": "Consultar um ou mais itens de uma venda",
     "version": "1.0.0",
     "name": "getVendaItens",
     "group": "Vendas",
@@ -5913,16 +5913,16 @@
           {
             "group": "Parameter",
             "type": "String",
-            "optional": true,
-            "field": "id",
-            "description": "<p>ID do item da venda. Se não for informado, a requisição retornará um array com todos os itens da venda.</p>"
+            "optional": false,
+            "field": "id_venda",
+            "description": "<p>ID da venda em andamento.</p>"
           },
           {
             "group": "Parameter",
             "type": "String",
-            "optional": false,
-            "field": "id_venda",
-            "description": "<p>ID da venda em andamento.</p>"
+            "optional": true,
+            "field": "id_item",
+            "description": "<p>ID do item da venda. Se não for informado, a requisição retornará um array com todos os itens da venda.</p>"
           }
         ]
       }
@@ -6091,8 +6091,8 @@
   },
   {
     "type": "get",
-    "url": "/vendas-temp",
-    "title": "Consultar as vendas temporárias em andamento.",
+    "url": "/vendas",
+    "title": "Consultar as vendas em andamento",
     "version": "1.0.0",
     "name": "getVendasTemp",
     "group": "Vendas",
@@ -6224,10 +6224,10 @@
   },
   {
     "type": "post",
-    "url": "/venda-itens",
+    "url": "/vendas/:id_venda/itens",
     "title": "Incluir novo produto na venda",
     "version": "1.0.0",
-    "name": "postVendaItens",
+    "name": "postVendasItens",
     "group": "Vendas",
     "header": {
       "fields": {
@@ -6391,7 +6391,7 @@
   },
   {
     "type": "put",
-    "url": "/venda-itens/:id",
+    "url": "/vendas/:id_venda/itens/:id_item",
     "title": "Alterar um produto na venda",
     "version": "1.0.0",
     "name": "putVendasItens",
@@ -6416,15 +6416,15 @@
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "id",
-            "description": "<p>ID do item da venda a ser alterado.</p>"
+            "field": "id_venda",
+            "description": "<p>ID da venda.</p>"
           },
           {
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "id_venda",
-            "description": "<p>ID da venda.</p>"
+            "field": "id_item",
+            "description": "<p>ID do item da venda a ser alterado.</p>"
           },
           {
             "group": "Parameter",
@@ -6558,8 +6558,8 @@
   },
   {
     "type": "put",
-    "url": "/venda-itens/precos",
-    "title": "Alterar a tabela de preço dos itens da venda",
+    "url": "/vendas/:id_venda/precos",
+    "title": "Alterar a tabela de preços da venda",
     "version": "1.0.0",
     "name": "putVendasItensPrecos",
     "group": "Vendas",
