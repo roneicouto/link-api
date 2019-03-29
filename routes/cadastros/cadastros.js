@@ -4,7 +4,7 @@ const rotas = {
   areasclientes: 'areacliente',  
   atividades: 'atividade',  
   bancos: 'portador',
-  centroscustos: 'centrocusto',
+  centroscustos: 'centrocusto', 
   clientes: 'cliente',
   formaspag: 'formaspag',
   fornecedores: 'fornecedor',
