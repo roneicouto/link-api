@@ -22,6 +22,7 @@ const rotas = {
   posprevendas: 'posprevenda',
   produtos_grupos: 'classproduto',
   produtos_unidades: 'undproduto',
+  produtos_tabprecos: 'tabprecos',
   tiposcobrancas: 'tipocobranca',
   tiposdocumentos: 'tipodoc',
   transportadoras: 'transportador',

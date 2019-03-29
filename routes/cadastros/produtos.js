@@ -382,3 +382,28 @@ module.exports = (app) => { RotaProdutos.start(app) }
  * @apiUse ErroRegistroNaoEncontrado
  */
 
+
+ /**
+ * @api {get} /produtos/tabprecos/:id  Consultar tabelas de preços
+ * @apiVersion 1.0.0
+ * @apiName GetProdutosTabPrecos
+ * @apiGroup Produtos
+ *
+ * @apiHeader {String} Authorization 'Bearer ' + Token obtido no login do usuário.
+ * 
+ * @apiParam {String} [id]   ID da tabela de preços.
+ * @apiParam {Number} [page] Número da página. Obrigatório somente quando <code>id</code> não for informado.
+ *
+ * @apiSuccess {String}   id            ID (código ou sigla) da unidade.
+ * @apiSuccess {String}   descricao     Descrição da tabela de preços.
+ *
+ * @apiSuccessExample Sucesso:
+ *     HTTP/1.1 200 OK
+ *    {  
+ *      "id": "01",
+ *      "descricao": "A VISTA",
+ *    }
+ *
+ * @apiUse ErroRegistroNaoEncontrado
+ */
+

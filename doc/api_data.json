@@ -3720,6 +3720,103 @@
   },
   {
     "type": "get",
+    "url": "/produtos/tabprecos/:id",
+    "title": "Consultar tabelas de preços",
+    "version": "1.0.0",
+    "name": "GetProdutosTabPrecos",
+    "group": "Produtos",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Authorization",
+            "description": "<p>'Bearer ' + Token obtido no login do usuário.</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "id",
+            "description": "<p>ID da tabela de preços.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": true,
+            "field": "page",
+            "description": "<p>Número da página. Obrigatório somente quando <code>id</code> não for informado.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "id",
+            "description": "<p>ID (código ou sigla) da unidade.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "descricao",
+            "description": "<p>Descrição da tabela de preços.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Sucesso:",
+          "content": " HTTP/1.1 200 OK\n{  \n  \"id\": \"01\",\n  \"descricao\": \"A VISTA\",\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "./routes/cadastros/produtos.js",
+    "groupTitle": "Produtos",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "Number",
+            "optional": false,
+            "field": "status",
+            "description": "<p>Código de status HTTP.</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Mensagem de erro.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Erro:",
+          "content": "HTTP/1.1 404 \n{\n  \"status\": 404,\n  \"message\": \"Registro não encontrado!\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
     "url": "/produtos/unidades/:id",
     "title": "Consultar unidades",
     "version": "1.0.0",
