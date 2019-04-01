@@ -1,4 +1,3 @@
-const utils = require('../../utils/utils')
 const createError = require('http-errors')
 const PreVenda = require('../../models/prevenda')
 const Venda = require('../../models/venda')
@@ -121,9 +120,9 @@ class RotaPreVenda {
     route.get( (req, res, next) => {
 
       const getPreVendas = async () => {
-        req.body.id_loja     = req.login.idLoja
-        req.body.id_vendedor = req.login.usuario.data.id_vendedor
-        let lista = await new PreVenda().findByPeriodo(req.body)
+        req.query.id_loja     = req.login.idLoja
+        req.query.id_vendedor = req.login.usuario.data.id_vendedor
+        let lista = await new PreVenda().findByPeriodo(req.query)
         if (! lista.length) {
           throw new createError.NotFound('Pré-vendas não encontradas!')
         }

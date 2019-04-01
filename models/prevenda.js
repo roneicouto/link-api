@@ -41,38 +41,39 @@ module.exports = class PreVenda {
   }
 
 
-  findByPeriodo(filter) {
+  findByPeriodo(query) {
     this.reset()
-    if (! filter.page || filter.page <= 0) 
+
+    if (! query.page || query.page <= 0) 
       throw new createError.BadRequest('Página não informada!')
-    if (! filter.data_ini)
+    if (! query.data_ini)
       throw new createError.BadRequest('Data inicial não informada!')
-    if (! filter.data_fim)
+    if (! query.data_fim)
       throw new createError.BadRequest('Data final não informada!')
-    this.sql.page  = filter.page
+    this.sql.page  = query.page
     this.sql.where = 'data >= $1 and data <= $2'
-    this.sql.params.push(filter.data_ini, filter.data_fim)
-    if (filter.id_loja) {
-      this.sql.params.push(filter.id_loja)
+    this.sql.params.push(query.data_ini, query.data_fim)
+    if (query.id_loja) {
+      this.sql.params.push(query.id_loja)
       this.sql.where += ' and id_loja = $' + this.sql.params.length
     }
-    if (filter.id_cliente) {
-      this.sql.params.push(filter.id_cliente)
+    if (query.id_cliente) {
+      this.sql.params.push(query.id_cliente)
       this.sql.where += ' and id_cliente = $' + this.sql.params.length
     }
-    if (filter.id_vendedor) {
-      this.sql.params.push(filter.id_vendedor)
+    if (query.id_vendedor) {
+      this.sql.params.push(query.id_vendedor)
       this.sql.where += ' and id_vendedor ~ $' + this.sql.params.length
     }
-    if (filter.id_plano_pag) {
-      this.sql.params.push(filter.id_plano_pag)
+    if (query.id_plano_pag) {
+      this.sql.params.push(query.id_plano_pag)
       this.sql.where += ' and id_plano_pag ~ $' + this.sql.params.length
     }
-    if (filter.situacao) {
+    if (query.situacao) {
       this.sql.params.push(situacao)
       this.sql.where += ' and situacao ~ $' +this.sql.params.length
     }
-    if (filter.id_posicao) {
+    if (query.id_posicao) {
       this.sql.params.push(id_posicao)
       this.sql.where += ' and id_pos ~ $' +this.sql.params.length
     }
