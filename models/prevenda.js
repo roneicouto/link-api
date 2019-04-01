@@ -4,7 +4,6 @@ const utils = require('../utils/utils')
 const SqlPage = require('../classes/sql-page')
 const Loja = require('../models/loja')
 const OpComercial = require('../models/opcomercial')
-const Produto = require('../models/produto')
 
 
 module.exports = class PreVenda {
@@ -63,18 +62,18 @@ module.exports = class PreVenda {
     }
     if (query.id_vendedor) {
       this.sql.params.push(query.id_vendedor)
-      this.sql.where += ' and id_vendedor ~ $' + this.sql.params.length
+      this.sql.where += ' and id_vendedor = $' + this.sql.params.length
     }
     if (query.id_plano_pag) {
       this.sql.params.push(query.id_plano_pag)
       this.sql.where += ' and id_plano_pag ~ $' + this.sql.params.length
     }
     if (query.situacao) {
-      this.sql.params.push(situacao)
+      this.sql.params.push(query.situacao)
       this.sql.where += ' and situacao ~ $' +this.sql.params.length
     }
     if (query.id_posicao) {
-      this.sql.params.push(id_posicao)
+      this.sql.params.push(query.id_posicao)
       this.sql.where += ' and id_pos ~ $' +this.sql.params.length
     }
     this.sql.orderBy = 'data, id_loja, numero'

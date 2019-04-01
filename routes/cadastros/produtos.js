@@ -26,7 +26,7 @@ class RotaProdutos {
       promise = req.params.id    ? this.produto.findById(req.params.id) : 
                 req.query.codbar ? this.produto.findByCodigoBarras(req.query.codbar) :
                 req.query.ref    ? this.produto.findByReferencia(req.query.ref):
-                                       ''
+                                   ''
       if (promise) {
         promise
           .then(found => {
@@ -40,9 +40,9 @@ class RotaProdutos {
         return
       } 
       
-      promise = req.query.descr     ? this.produto.findByDescricao(req.query.descr, page) :
-                req.query.parcial   ? this.produto.findByDescricaoParcial(req.query.parcial, page) :
-                                      this.produto.getAll({field: 'descricao', order: 1}, page)
+      promise = req.query.descr   ? this.produto.findByDescricao(req.query.descr, page) :
+                req.query.parcial ? this.produto.findByDescricaoParcial(req.query.parcial, page) :
+                                    this.produto.getAll({field: 'descricao', order: 1}, page)
       promise
         .then(lista => {
           if (!lista.length) {

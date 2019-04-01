@@ -415,9 +415,9 @@ module.exports = (app) => new RotaPreVenda(app)
  * @apiParam {date}   data_fim        Data final do período.
  * @apiParam {Number} page            Número da página.
  * @apiParam {String} [id_cliente]    ID do cliente.
- * @apiParam {String} [id_plano_pag]  ID do plano de pagamento.
- * @apiParam {String} [situacao]      String contendo as situações a serem consultadas. Ex.: "PCF" para consultar pré-vendas Pendentes, Canceladas e Faturadas.
- * @apiParam {String} [id_posicao]    ID da posição da pré-venda.
+ * @apiParam {String} [id_plano_pag]  Lista de ID de planos de pagamentos, separados por "|". Ex.: "001|005|012"
+ * @apiParam {String} [situacao]      Lista de situações, separadas por "|". Ex.: "P|C|F" para consultar pré-vendas Pendentes, Canceladas e Faturadas.
+ * @apiParam {String} [id_posicao]    Lista de ID de posições de pré-vendas, separadas por "|". Ex.: "01|02|03"
  * 
  * @apiError {Number} status  Código do status HTTP.
  * @apiError {String} message Mensagem de erro.
