@@ -156,8 +156,6 @@ module.exports = class Venda {
       msg.push('Vendedor não informado.')
     if (! venda.id_plano_pag)
       msg.push('Plano de pagamento não informado.')
-    if (! venda.id_tab_preco)
-      msg.push('Tabela de preço não informada.')
     if (msg.length > 0) 
       return {sucesso: false, erros: msg}
 

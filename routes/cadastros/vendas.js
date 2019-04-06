@@ -11,7 +11,7 @@ class RotaVenda {
     this.setRouteDeleteVenda()
     this.setRouteGetItem()
     this.setRouteGetVendas()
-  }
+}
 
 
   setRoutePostItem() {
