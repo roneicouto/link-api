@@ -434,6 +434,9 @@ module.exports = (app) => {
  * @apiUse ErroRegistroNaoEncontrado
  */
 
+ /**
+  * @apiDefine Cobranca Cobrança
+  */
 
  /**
  * @api {get} /ocrcobrancas/:id  Consultar ocorrencias de cobranças
@@ -779,6 +782,9 @@ module.exports = (app) => {
  * @apiUse ErroRegistroNaoEncontrado
  */
 
+  /**
+ * @apiDefine Usuarios Usuários
+ */
 
  /**
  * @api {get} /usuarios/:id  Consultar usuários

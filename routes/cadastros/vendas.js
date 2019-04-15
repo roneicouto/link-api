@@ -158,7 +158,7 @@ module.exports = (app) => new RotaVenda(app)
  * @apiParam {String}   [nome]           Nome para identificação da venda (30 caracteres), que pode ser informado apenas no primeiro item.
  * @apiParam {String}   id_produto       ID (código) do produto.
  * @apiParam {String}   [complemento]    Descrição complementar do produto.
- * @apiParam {String}   [posgrade]       Posição da grade do produto, se houver.
+ * @apiParam {String}   [pos_grade]      Posição da grade do produto, se houver.
  * @apiParam {Boolean}  fracionado       Indica se o produto foi vendido em undidades fracionadas.
  * @apiParam {Number}   quantidade       Quantidade vendida do produto.
  * @apiParam {Number}   preco            Preço unitário do produto.
@@ -195,7 +195,7 @@ module.exports = (app) => new RotaVenda(app)
  * @apiParam {String}   id_item          ID do item da venda a ser alterado.  
  * @apiParam {String}   id_produto       ID (código) do produto.
  * @apiParam {String}   [complemento]    Descrição complementar do produto.
- * @apiParam {String}   [posgrade]       Posição da grade do produto, se houver.
+ * @apiParam {String}   [pos_grade]      Posição da grade do produto, se houver.
  * @apiParam {Boolean}  fracionado       Indica se o produto foi vendido em undidades fracionadas.
  * @apiParam {Number}   quantidade       Quantidade vendida do produto.
  * @apiParam {Number}   preco            Preço unitário do produto.

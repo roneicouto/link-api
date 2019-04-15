@@ -1,12 +1,8 @@
 const createError = require('http-errors')
 const db = require('../utils/db')
-const utils = require('../utils/utils')
 const SqlPage = require('../classes/sql-page')
-const Loja = require('../models/loja')
-const OpComercial = require('../models/opcomercial')
 
-
-module.exports = class PreVenda {
+module.exports = class Orcamento {
 
   constructor() {
     this.reset()
@@ -72,17 +68,13 @@ module.exports = class PreVenda {
       this.sql.params.push(query.situacao)
       this.sql.where += ' and situacao ~ $' +this.sql.params.length
     }
-    if (query.id_posicao) {
-      this.sql.params.push(query.id_posicao)
-      this.sql.where += ' and id_pos ~ $' +this.sql.params.length
-    }
     this.sql.orderBy = 'data, id_loja, numero'
     return this.executeSql(true)
   }
 
 
   async executeSql(retArray = false) {
-    let cmdSql = 'SELECT * FROM vs_api_pre_vendas' +
+    let cmdSql = 'SELECT * FROM vs_api_orcamentos' +
                   (this.sql.where   ? ' WHERE '    + this.sql.where   : '') +
                   (this.sql.orderBy ? ' ORDER BY ' + this.sql.orderBy : '') +
                   (retArray ? '' : ' LIMIT 1')
@@ -91,9 +83,9 @@ module.exports = class PreVenda {
                                           : db.query(cmdSql, this.sql.params))
     if (retArray) {
       let lista = rows.map( row => {
-        let prevenda = new PreVenda()
-        prevenda.data = row
-        return prevenda
+        let orcamento = new Orcamento()
+        orcamento.data = row
+        return orcamento
       })
       return lista
     } 
@@ -104,7 +96,7 @@ module.exports = class PreVenda {
     }
 
     this.data = rows[0]
-    this.data.itens = await PreVenda.getItens(this.data.id_loja, this.data.numero)
+    this.data.itens = await Orcamento.getItens(this.data.id_loja, this.data.numero)
 
     this.data.itens.forEach(item => {
       delete item.id_loja
@@ -113,20 +105,10 @@ module.exports = class PreVenda {
 
     return true
   }
-
-
-  static async getPendencias(idPrevenda) {
-    let sql = 'SELECT id_item, tipo_vld, descricao ' +
-              'FROM vs_prevendas_validacoes ' +
-              'WHERE id_pvenda = $1 and pendente ' +
-              'ORDER BY coalesce(id_item, 0)'
-    let {rows} = await db.query(sql, [idPrevenda])
-    return {total: rows.length, pendencias: rows}
-  }
-
   
+
   static async getItens(idLoja, numero) {
-    let sql = 'SELECT * FROM vs_api_pre_vendas_itens '+
+    let sql = 'SELECT * FROM vs_api_orcamentos_itens '+
               'WHERE id_loja = $1 and numero = $2 '+
               'ORDER BY seq'
     let resp = await db.query(sql, [idLoja, numero.padStart(10)])
@@ -135,9 +117,10 @@ module.exports = class PreVenda {
 
 
   static async getInstance(idLoja, numero) {
-    let prevenda = new PreVenda()
-    let found    = await prevenda.findByNumero(idLoja, numero)
-    return found ? prevenda : {}
+    let orcamento = new Orcamento()
+    let found    = await orcamento.findByNumero(idLoja, numero)
+    return found ? orcamento : {}
   }
- 
+
+    
 }

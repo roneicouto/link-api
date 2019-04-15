@@ -1216,7 +1216,7 @@
       ]
     },
     "filename": "./routes/cadastros/cadastros.js",
-    "groupTitle": "Cobranca",
+    "groupTitle": "Cobrança",
     "error": {
       "fields": {
         "Error 4xx": [
@@ -1313,7 +1313,7 @@
       ]
     },
     "filename": "./routes/cadastros/cadastros.js",
-    "groupTitle": "Cobranca",
+    "groupTitle": "Cobrança",
     "error": {
       "fields": {
         "Error 4xx": [
@@ -1462,6 +1462,874 @@
         {
           "title": "Erro:",
           "content": "HTTP/1.1 404 \n{\n  \"status\": 404,\n  \"message\": \"Registro não encontrado!\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
+    "url": "/orcamentos",
+    "title": "Consultar orçamentos no periodo",
+    "version": "1.0.0",
+    "name": "getOrcamentos",
+    "group": "Orcamentos",
+    "description": "<p>Esta requisição retorna um array de orçamentos geradas no período informado, de acordo com a página informada. Os itens dos orçamentos não serão retornados.</p>",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Authorization",
+            "description": "<p>'Bearer ' + Token obtido no login do usuário.</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "date",
+            "optional": false,
+            "field": "data_ini",
+            "description": "<p>Data inicial do periodo.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "date",
+            "optional": false,
+            "field": "data_fim",
+            "description": "<p>Data final do período.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "page",
+            "description": "<p>Número da página.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "id_cliente",
+            "description": "<p>ID do cliente.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "id_plano_pag",
+            "description": "<p>Lista de ID de planos de pagamentos, separados por &quot;|&quot;. Ex.: &quot;001|005|012&quot;</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "situacao",
+            "description": "<p>Lista de situações, separadas por &quot;|&quot;. Ex.: &quot;P|C|F&quot; para consultar orçamentos Pendentes, Cancelados e Faturados.</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "Number",
+            "optional": false,
+            "field": "status",
+            "description": "<p>Código do status HTTP.</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Mensagem de erro.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Erro:",
+          "content": "HTTP/1.1 404 \n{\n  \"status\": 404,\n  \"message\": \"Orçamentos não encontrados!\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "./routes/cadastros/orcamentos.js",
+    "groupTitle": "Orçamentos"
+  },
+  {
+    "type": "get",
+    "url": "/orcamentos/:numero",
+    "title": "Consultar um orçamento pelo número",
+    "version": "1.0.0",
+    "name": "getOrcamentosNumero",
+    "group": "Orcamentos",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Authorization",
+            "description": "<p>'Bearer ' + Token obtido no login do usuário.</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "numero",
+            "description": "<p>Número do orçamento a ser consultado.</p>"
+          }
+        ]
+      }
+    },
+    "filename": "./routes/cadastros/orcamentos.js",
+    "groupTitle": "Orçamentos",
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "id_loja",
+            "description": "<p>ID da loja onde o orçamento foi gerado</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "numero",
+            "description": "<p>Número da orçamento.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Date",
+            "optional": false,
+            "field": "data",
+            "description": "<p>Data de geração do orçamento.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "id_vendedor",
+            "description": "<p>ID do vendedor.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "nome_vendedor",
+            "description": "<p>Nome do vendedor.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "id_cliente",
+            "description": "<p>ID do cliente.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "nome_cliente",
+            "description": "<p>Nome do cliente.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "id_tab_preco",
+            "description": "<p>ID da tabela de preço usada no orçamento.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "id_parceiro",
+            "description": "<p>ID do parceiro (indicador).</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "qt_itens",
+            "description": "<p>Número de itens lançados no orçamento.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "vl_itens",
+            "description": "<p>Valor da soma total dos itens.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "vl_acrescimo",
+            "description": "<p>Valor de acréscimo sobre os itens.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "vl_desconto",
+            "description": "<p>Valor de desconto sobre os itens.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "vl_total",
+            "description": "<p>Valor total do orçamento.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "id_plano_pag",
+            "description": "<p>ID do plano de pagamento.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "nome_plano_pag",
+            "description": "<p>Nome do plano de pagamento.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "forma_pag",
+            "description": "<p>ID da forma de pagamento gerada pelo plano.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "vl_entrada",
+            "description": "<p>Valor de entrada, para o caso de venda a prazo.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "parcelas",
+            "description": "<p>Número de parcelas de pagamento geradas.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "vl_parcela",
+            "description": "<p>Valor da parcela de pagamento.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "situacao",
+            "description": "<p>Situação da orçamento: P-Pendente F-Faturado C-Cancelado</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Date",
+            "optional": false,
+            "field": "data_entrega",
+            "description": "<p>Data prevista para entrega dos produtos.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "hora_entrega",
+            "description": "<p>Hora prevista para entrega dos produtos.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "id_opcom",
+            "description": "<p>ID da operação comercial de venda.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "num_venda",
+            "description": "<p>Número da venda gerada na operação comercial.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Date",
+            "optional": false,
+            "field": "data_venda",
+            "description": "<p>Data da venda gerada.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "num_nfe",
+            "description": "<p>Número da NF-e ou NFC-e gerada.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object[]",
+            "optional": false,
+            "field": "itens",
+            "description": "<p>Array contendo a lista de itens do orçamento.</p>"
+          }
+        ],
+        "Campos do item da pré-venda": [
+          {
+            "group": "pvItem",
+            "type": "String",
+            "optional": false,
+            "field": "seq",
+            "description": "<p>Sequência do item.</p>"
+          },
+          {
+            "group": "pvItem",
+            "type": "String",
+            "optional": false,
+            "field": "id_produto",
+            "description": "<p>Código do produto ou serviço.</p>"
+          },
+          {
+            "group": "pvItem",
+            "type": "String",
+            "optional": false,
+            "field": "descricao",
+            "description": "<p>Descrição do item.</p>"
+          },
+          {
+            "group": "pvItem",
+            "type": "String",
+            "optional": false,
+            "field": "referencia",
+            "description": "<p>Referência do item.</p>"
+          },
+          {
+            "group": "pvItem",
+            "type": "String",
+            "optional": false,
+            "field": "especie",
+            "description": "<p>Espécie do item: P-Produto ou S-Serviço.</p>"
+          },
+          {
+            "group": "pvItem",
+            "type": "String",
+            "optional": false,
+            "field": "compl_descr",
+            "description": "<p>Complemento da descrição do item.</p>"
+          },
+          {
+            "group": "pvItem",
+            "type": "String",
+            "optional": false,
+            "field": "pos_grade",
+            "description": "<p>Posição da grade do produto no formato 9999.</p>"
+          },
+          {
+            "group": "pvItem",
+            "type": "String",
+            "optional": false,
+            "field": "lin_grade",
+            "description": "<p>Descrição da linha da grade.</p>"
+          },
+          {
+            "group": "pvItem",
+            "type": "String",
+            "optional": false,
+            "field": "col_grade",
+            "description": "<p>Descrição da coluna da grade.</p>"
+          },
+          {
+            "group": "pvItem",
+            "type": "Number",
+            "optional": false,
+            "field": "quantidade",
+            "description": "<p>Quantidade do item.</p>"
+          },
+          {
+            "group": "pvItem",
+            "type": "Boolean",
+            "optional": false,
+            "field": "fracionado",
+            "description": "<p>Indica se o item foi vendido em unidades fracionadas.</p>"
+          },
+          {
+            "group": "pvItem",
+            "type": "Number",
+            "optional": false,
+            "field": "preco",
+            "description": "<p>Preço unitário do item.</p>"
+          },
+          {
+            "group": "pvItem",
+            "type": "Number",
+            "optional": false,
+            "field": "pdesc",
+            "description": "<p>Percentual e desconto sobre o preço do item.</p>"
+          },
+          {
+            "group": "pvItem",
+            "type": "Number",
+            "optional": false,
+            "field": "vl_total",
+            "description": "<p>Valor total do item.</p>"
+          },
+          {
+            "group": "pvItem",
+            "type": "Boolean",
+            "optional": false,
+            "field": "promocao",
+            "description": "<p>Indica se o produto foi vendido com preço de promoção.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Sucesso:",
+          "content": "HTTP/1.1 200 OK\n{\n   \"id_loja\":\"00\",\n   \"numero\":\"2027\",\n   \"data\":\"2015-12-14T02:00:00.000Z\",\n   \"id_vendedor\":\"001\",\n   \"nome_vendedor\":\"LUIS CARLOS\",\n   \"id_cliente\":\"00000001\",\n   \"nome_cliente\":\"FRANCISCO OLIVEIRA COSMETICOS LTDA\",\n   \"id_tab_preco\":\"01\",\n   \"id_parceiro\":\"00034\",\n   \"qt_itens\":1,\n   \"vl_itens\":152.25,\n   \"vl_acrescimo\":0,\n   \"vl_desconto\":10.10,\n   \"vl_total\":142.15,\n   \"id_plano_pag\":\"001\",\n   \"nome_plano_pag\":\"A VISTA\",\n   \"forma_pag\":\"01\",\n   \"vl_entrada\":0,\n   \"parcelas\":0,\n   \"vl_parcela\":0,\n   \"situacao\":\"F\",\n   \"data_entrega\":\"2015-12-14T02:00:00.000Z\",\n   \"hora_entrega\":\"15:00:00\",\n   \"id_opcom\":\"10\",\n   \"num_venda\":\"5219\",\n   \"data_venda\":\"2015-12-14T02:00:00.000Z\",\n   \"num_nfe\":\"40\",\n   \"itens\":[\n       {\n         \"seq\":\"001\",\n         \"id_produto\":\"00001\",\n         \"cod_barras\":\"9788537909294\",\n         \"descricao\":\"LEITE ITAMBE PLUS CXA C/20 UND\",\n         \"referencia\":\"ABC-DEF-GHI-JKLM-NOP\",\n         \"especie\":\"P\",\n         \"compl_descr\":\"\",\n         \"pos_grade\":\"\",\n         \"lin_grade\":\"\",\n         \"col_grade\":\"\",\n         \"quantidade\":1,\n         \"fracionado\":false,\n         \"unidade\":\"CXA\",\n         \"preco\":152.25,\n         \"pdesc\":0,\n         \"vl_total\":152.25,\n         \"promocao\":false\n       }\n   ]\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "Number",
+            "optional": false,
+            "field": "status",
+            "description": "<p>Código do status HTTP.</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Mensagem de erro.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Erro:",
+          "content": "HTTP/1.1 404 \n{\n  \"status\": 404,\n  \"message\": \"Orçamento 6756 não encontrado na loja 01 !\"\n}",
+          "type": "json"
+        }
+      ]
+    }
+  },
+  {
+    "type": "get",
+    "url": "/orcamentos/:numero/itens",
+    "title": "Consultar os itens de um orçamento",
+    "version": "1.0.0",
+    "name": "getOrcamentosNumeroItens",
+    "group": "Orcamentos",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Authorization",
+            "description": "<p>'Bearer ' + Token obtido no login do usuário.</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "numero",
+            "description": "<p>Número do orçamento a ser consultado.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "examples": [
+        {
+          "title": "Sucesso:",
+          "content": "HTTP/1.1 200 OK\n[ \n   {\n      \"seq\":\"001\",\n      \"id_produto\":\"00001\",\n      \"cod_barras\":\"9788537909294\",\n      \"descricao\":\"LEITE ITAMBE PLUS CXA C/20 UND\",\n      \"referencia\":\"ABC-DEF-GHI-JKLM-NOP\",\n      \"especie\":\"P\",\n      \"compl_descr\":\"\",\n      \"pos_grade\":\"\",\n      \"lin_grade\":\"\",\n      \"col_grade\":\"\",\n      \"quantidade\":1,\n      \"fracionado\":false,\n      \"unidade\":\"CXA\",\n      \"preco\":152.25,\n      \"pdesc\":0,\n      \"vl_total\":152.25,\n      \"promocao\":false\n   }\n]",
+          "type": "json"
+        }
+      ],
+      "fields": {
+        "Campos do item da pré-venda": [
+          {
+            "group": "pvItem",
+            "type": "String",
+            "optional": false,
+            "field": "seq",
+            "description": "<p>Sequência do item.</p>"
+          },
+          {
+            "group": "pvItem",
+            "type": "String",
+            "optional": false,
+            "field": "id_produto",
+            "description": "<p>Código do produto ou serviço.</p>"
+          },
+          {
+            "group": "pvItem",
+            "type": "String",
+            "optional": false,
+            "field": "descricao",
+            "description": "<p>Descrição do item.</p>"
+          },
+          {
+            "group": "pvItem",
+            "type": "String",
+            "optional": false,
+            "field": "referencia",
+            "description": "<p>Referência do item.</p>"
+          },
+          {
+            "group": "pvItem",
+            "type": "String",
+            "optional": false,
+            "field": "especie",
+            "description": "<p>Espécie do item: P-Produto ou S-Serviço.</p>"
+          },
+          {
+            "group": "pvItem",
+            "type": "String",
+            "optional": false,
+            "field": "compl_descr",
+            "description": "<p>Complemento da descrição do item.</p>"
+          },
+          {
+            "group": "pvItem",
+            "type": "String",
+            "optional": false,
+            "field": "pos_grade",
+            "description": "<p>Posição da grade do produto no formato 9999.</p>"
+          },
+          {
+            "group": "pvItem",
+            "type": "String",
+            "optional": false,
+            "field": "lin_grade",
+            "description": "<p>Descrição da linha da grade.</p>"
+          },
+          {
+            "group": "pvItem",
+            "type": "String",
+            "optional": false,
+            "field": "col_grade",
+            "description": "<p>Descrição da coluna da grade.</p>"
+          },
+          {
+            "group": "pvItem",
+            "type": "Number",
+            "optional": false,
+            "field": "quantidade",
+            "description": "<p>Quantidade do item.</p>"
+          },
+          {
+            "group": "pvItem",
+            "type": "Boolean",
+            "optional": false,
+            "field": "fracionado",
+            "description": "<p>Indica se o item foi vendido em unidades fracionadas.</p>"
+          },
+          {
+            "group": "pvItem",
+            "type": "Number",
+            "optional": false,
+            "field": "preco",
+            "description": "<p>Preço unitário do item.</p>"
+          },
+          {
+            "group": "pvItem",
+            "type": "Number",
+            "optional": false,
+            "field": "pdesc",
+            "description": "<p>Percentual e desconto sobre o preço do item.</p>"
+          },
+          {
+            "group": "pvItem",
+            "type": "Number",
+            "optional": false,
+            "field": "vl_total",
+            "description": "<p>Valor total do item.</p>"
+          },
+          {
+            "group": "pvItem",
+            "type": "Boolean",
+            "optional": false,
+            "field": "promocao",
+            "description": "<p>Indica se o produto foi vendido com preço de promoção.</p>"
+          }
+        ]
+      }
+    },
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "Number",
+            "optional": false,
+            "field": "status",
+            "description": "<p>Código do status HTTP.</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Mensagem de erro.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Erro:",
+          "content": "HTTP/1.1 404 \n{\n  \"status\": 404,\n  \"message\": \"Os itens do orçamento não foram encontrados !\"\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "./routes/cadastros/orcamentos.js",
+    "groupTitle": "Orçamentos"
+  },
+  {
+    "type": "post",
+    "url": "/orcamentos",
+    "title": "Gerar uma novo orçamento",
+    "version": "1.0.0",
+    "name": "postOrcamento",
+    "group": "Orcamentos",
+    "header": {
+      "fields": {
+        "Header": [
+          {
+            "group": "Header",
+            "type": "String",
+            "optional": false,
+            "field": "Authorization",
+            "description": "<p>'Bearer ' + Token obtido no login do usuário.</p>"
+          }
+        ]
+      }
+    },
+    "parameter": {
+      "fields": {
+        "Parameter": [
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "id_venda",
+            "description": "<p>ID da venda temporária a ser transformada em orçamento.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "id_cliente",
+            "description": "<p>ID (código) do cliente.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "id_vendedor",
+            "description": "<p>ID do vendedor.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "id_tab_preco",
+            "description": "<p>ID da tabela de preço.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "id_plano_pag",
+            "description": "<p>ID do plano de pagamento.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "vl_itens",
+            "description": "<p>Valor total dos produtos.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "vl_desconto",
+            "description": "<p>Valor do desconto concedido nos produtos.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "vl_acrescimo",
+            "description": "<p>Valor do acréscimo sobre os produtos.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": false,
+            "field": "vl_total",
+            "description": "<p>Valor total da venda.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": true,
+            "field": "vl_entrada",
+            "description": "<p>Valor de entrada, caso a venda seja a prazo.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": true,
+            "field": "parcelas",
+            "description": "<p>Quantidade de parcelas de pagamento, se a venda for a prazo.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Number",
+            "optional": true,
+            "field": "vl_parcela",
+            "description": "<p>Valor da parcela de pagamento, se a venda for a prazo.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "Date",
+            "optional": true,
+            "field": "data_entrega",
+            "description": "<p>Data de entrega dos produtos.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "hora_entrega",
+            "description": "<p>Horario previsto para entrega (HH:MM).</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "id_parceiro",
+            "description": "<p>ID do parceiro (indicador).</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "obs",
+            "description": "<p>Observações referentes a venda.</p>"
+          }
+        ]
+      }
+    },
+    "success": {
+      "fields": {
+        "Success 200": [
+          {
+            "group": "Success 200",
+            "type": "Boolean",
+            "optional": false,
+            "field": "sucesso",
+            "description": "<p>Retorna sempre <code>true</code>.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "id_loja",
+            "description": "<p>ID da loja onde o orçamento foi gerado.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "String",
+            "optional": false,
+            "field": "numero",
+            "description": "<p>Número do orçamento gerado.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "vl_total",
+            "description": "<p>Valor total do orçamento gerado.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Sucesso:",
+          "content": " HTTP/1.1 200 OK\n{\n  \"sucesso\": true,\n  \"id_loja\": \"01\",\n  \"numero\": \"123346\",\n  \"vl_total\": 2359.25\n}",
+          "type": "json"
+        }
+      ]
+    },
+    "filename": "./routes/cadastros/orcamentos.js",
+    "groupTitle": "Orçamentos",
+    "error": {
+      "fields": {
+        "Error 4xx": [
+          {
+            "group": "Error 4xx",
+            "type": "Number",
+            "optional": false,
+            "field": "status",
+            "description": "<p>Código do status HTTP.</p>"
+          },
+          {
+            "group": "Error 4xx",
+            "type": "String",
+            "optional": false,
+            "field": "message",
+            "description": "<p>Mensagem de erro.</p>"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "title": "Erro:",
+          "content": "HTTP/1.1 404 \n{\n  \"status\": 404,\n  \"message\": \"Orçamento 6756 não encontrado na loja 01 !\"\n}",
           "type": "json"
         }
       ]
@@ -2654,7 +3522,7 @@
     "title": "Consultar pré-vendas no período",
     "version": "1.0.0",
     "name": "getPreVendas",
-    "group": "Pre_vendas",
+    "group": "Prevendas",
     "description": "<p>Esta requisição retorna um array de pré-vendas geradas no período informado, de acordo com a página informada. Os itens das pré-vendas não serão retornados.</p>",
     "header": {
       "fields": {
@@ -2705,21 +3573,21 @@
             "type": "String",
             "optional": true,
             "field": "id_plano_pag",
-            "description": "<p>ID do plano de pagamento.</p>"
+            "description": "<p>Lista de ID de planos de pagamentos, separados por &quot;|&quot;. Ex.: &quot;001|005|012&quot;</p>"
           },
           {
             "group": "Parameter",
             "type": "String",
             "optional": true,
             "field": "situacao",
-            "description": "<p>String contendo as situações a serem consultadas. Ex.: &quot;PCF&quot; para consultar pré-vendas Pendentes, Canceladas e Faturadas.</p>"
+            "description": "<p>Lista de situações, separadas por &quot;|&quot;. Ex.: &quot;P|C|F&quot; para consultar pré-vendas Pendentes, Canceladas e Faturadas.</p>"
           },
           {
             "group": "Parameter",
             "type": "String",
             "optional": true,
             "field": "id_posicao",
-            "description": "<p>ID da posição da pré-venda.</p>"
+            "description": "<p>Lista de ID de posições de pré-vendas, separadas por &quot;|&quot;. Ex.: &quot;01|02|03&quot;</p>"
           }
         ]
       }
@@ -2752,7 +3620,7 @@
       ]
     },
     "filename": "./routes/cadastros/prevendas.js",
-    "groupTitle": "Pre_vendas"
+    "groupTitle": "Pré-vendas"
   },
   {
     "type": "get",
@@ -2760,7 +3628,7 @@
     "title": "Consultar uma pré-venda pelo número",
     "version": "1.0.0",
     "name": "getPreVendasNumero",
-    "group": "Pre_vendas",
+    "group": "Prevendas",
     "header": {
       "fields": {
         "Header": [
@@ -2788,7 +3656,7 @@
       }
     },
     "filename": "./routes/cadastros/prevendas.js",
-    "groupTitle": "Pre_vendas",
+    "groupTitle": "Pré-vendas",
     "success": {
       "fields": {
         "Success 200": [
@@ -3188,7 +4056,7 @@
     "title": "Consultar os itens de uma pré-venda",
     "version": "1.0.0",
     "name": "getPreVendasNumeroItens",
-    "group": "Pre_vendas",
+    "group": "Prevendas",
     "header": {
       "fields": {
         "Header": [
@@ -3361,7 +4229,7 @@
       ]
     },
     "filename": "./routes/cadastros/prevendas.js",
-    "groupTitle": "Pre_vendas"
+    "groupTitle": "Pré-vendas"
   },
   {
     "type": "post",
@@ -3369,7 +4237,7 @@
     "title": "Gerar uma nova pré-venda",
     "version": "1.0.0",
     "name": "postPreVendas",
-    "group": "Pre_vendas",
+    "group": "Prevendas",
     "header": {
       "fields": {
         "Header": [
@@ -3585,7 +4453,7 @@
       ]
     },
     "filename": "./routes/cadastros/prevendas.js",
-    "groupTitle": "Pre_vendas",
+    "groupTitle": "Pré-vendas",
     "error": {
       "fields": {
         "Error 4xx": [
@@ -4989,7 +5857,7 @@
     },
     "version": "0.0.0",
     "filename": "./routes/login.js",
-    "groupTitle": "Usuarios"
+    "groupTitle": "Usuários"
   },
   {
     "type": "get",
@@ -5073,7 +5941,7 @@
       ]
     },
     "filename": "./routes/cadastros/cadastros.js",
-    "groupTitle": "Usuarios",
+    "groupTitle": "Usuários",
     "error": {
       "fields": {
         "Error 4xx": [
@@ -6374,7 +7242,7 @@
             "group": "Parameter",
             "type": "String",
             "optional": true,
-            "field": "posgrade",
+            "field": "pos_grade",
             "description": "<p>Posição da grade do produto, se houver.</p>"
           },
           {
@@ -6541,7 +7409,7 @@
             "group": "Parameter",
             "type": "String",
             "optional": true,
-            "field": "posgrade",
+            "field": "pos_grade",
             "description": "<p>Posição da grade do produto, se houver.</p>"
           },
           {

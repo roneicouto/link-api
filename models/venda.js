@@ -143,9 +143,20 @@ module.exports = class Venda {
   }
 
 
+  static async gerarOrcamento(venda) {
+    return await this.converterVenda('OR', venda)
+  }
+
+
   static async gerarPreVenda(venda) {
+    return await this.converterVenda('PV', venda)
+  }
+
+
+  static async converterVenda(tipoDoc, venda) {
 
     let msg = []
+
     venda.id_venda = parseInt(venda.id_venda || 0)    
 
     Venda.validar(venda, msg)
@@ -159,7 +170,7 @@ module.exports = class Venda {
     if (msg.length > 0) 
       return {sucesso: false, erros: msg}
 
-    let sql = 'SELECT api_venda_gerar_prevenda( $1 ) as result'
+    let sql = `SELECT api_venda_gerar_${ tipoDoc==='PV' ? 'prevenda' : 'orcamento' }( $1 ) as result`
 
     let {rows} = await db.query(sql, [JSON.stringify(venda)])
 
