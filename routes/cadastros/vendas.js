@@ -151,19 +151,24 @@ module.exports = (app) => new RotaVenda(app)
  * @apiVersion 1.0.0
  * @apiName postVendasItens
  * @apiGroup Vendas
- *
+ * 
+ * @apiDescription Permite a inclusão de um novo produto na venda. Se o ID da venda não for informado, uma nova venda será gerada e vinculada ao usuário. 
+ * @apiDescription Caso já exista na venda um produto com o mesmo ID (código), posição de grade e desconto, então a quantidade e valores informados na requisição serão adicionados ao produto já existente.
+ * 
  * @apiHeader {String} Authorization 'Bearer ' + Token obtido no login do usuário.
  * 
  * @apiParam {String}   [id_venda]       ID da venda. Se não for informado, será gerada uma nova venda.
  * @apiParam {String}   [nome]           Nome para identificação da venda (30 caracteres), que pode ser informado apenas no primeiro item.
- * @apiParam {String}   id_produto       ID (código) do produto.
+ * @apiParam {String}   id_produto       ID (código) do produto a ser inserido na venda.
  * @apiParam {String}   [complemento]    Descrição complementar do produto.
  * @apiParam {String}   [pos_grade]      Posição da grade do produto, se houver.
  * @apiParam {Boolean}  fracionado       Indica se o produto foi vendido em undidades fracionadas.
  * @apiParam {Number}   quantidade       Quantidade vendida do produto.
+ * @apiParam {String}   id_tab_preco     ID da tabela de preço do produto.
  * @apiParam {Number}   preco            Preço unitário do produto.
- * @apiParam {Number}   pdesc            Percentual de desconto concedido no produto.
+ * @apiParam {Number}   pdesc            Percentual de desconto concedido no preço unitário do produto.
  * @apiParam {Boolean}  promocao         Indica se o produto foi vendido com preço de promoção.
+ * @apiParam {String}   [id_loja_sep]    ID da loja de separação do produto, caso a mesma seja diferente da loja atual.
  * 
  * @apiSuccess {Boolean}  sucesso        Retorna sempre <code>true</code>.
  * @apiSuccess {Number}   id_venda       ID da venda.

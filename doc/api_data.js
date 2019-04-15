@@ -4279,13 +4279,6 @@ define({ "api": [
             "group": "Parameter",
             "type": "String",
             "optional": false,
-            "field": "id_tab_preco",
-            "description": "<p>ID da tabela de preço.</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": false,
             "field": "id_plano_pag",
             "description": "<p>ID do plano de pagamento.</p>"
           },
@@ -4302,13 +4295,6 @@ define({ "api": [
             "optional": false,
             "field": "mod_venda",
             "description": "<p>Modalidade da venda. 1-Normal 2-Futura ou 9-NFC-e</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "Number",
-            "optional": false,
-            "field": "vl_tabela",
-            "description": "<p>Valor total dos produtos (quantidade x preço de tabela).</p>"
           },
           {
             "group": "Parameter",
@@ -4384,13 +4370,6 @@ define({ "api": [
             "group": "Parameter",
             "type": "String",
             "optional": true,
-            "field": "id_loja_sep",
-            "description": "<p>ID da loja de separação dos produtos.</p>"
-          },
-          {
-            "group": "Parameter",
-            "type": "String",
-            "optional": true,
             "field": "id_obra",
             "description": "<p>ID da obra.</p>"
           },
@@ -4426,28 +4405,42 @@ define({ "api": [
             "type": "String",
             "optional": false,
             "field": "id_loja",
-            "description": "<p>ID da loja onde a pré-venda foi gerada.</p>"
+            "description": "<p>ID da loja onde as pré-vendas foram geradas.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Object[]",
+            "optional": false,
+            "field": "prevendas",
+            "description": "<p>Array contendo uma lista de objetos JSON das pré-vendas geradas.</p>"
           },
           {
             "group": "Success 200",
             "type": "String",
             "optional": false,
-            "field": "id_prevenda",
-            "description": "<p>Número da pré-venda gerada.</p>"
+            "field": "prevendas.numero",
+            "description": "<p>Número da pré-venda.</p>"
           },
           {
             "group": "Success 200",
             "type": "Number",
             "optional": false,
-            "field": "vl_total",
-            "description": "<p>Valor total da pré-venda gerada.</p>"
+            "field": "prevendas.vl_total",
+            "description": "<p>Valor total da pré-venda.</p>"
+          },
+          {
+            "group": "Success 200",
+            "type": "Number",
+            "optional": false,
+            "field": "prevendas.pendencias",
+            "description": "<p>Número de pendências (irregularidades) encontradas na pré-venda.</p>"
           }
         ]
       },
       "examples": [
         {
           "title": "Sucesso:",
-          "content": " HTTP/1.1 200 OK\n{\n  \"sucesso\": true,\n  \"id_loja\": \"01\",\n  \"id_prevenda\": \"112654\",\n  \"vl_total\": 1543.45\n}",
+          "content": " HTTP/1.1 200 OK\n{\n  \"sucesso\": true,\n  \"id_loja\": \"01\",\n  \"prevendas:\" [\n    {\n      \"numero\": \"112654\",\n      \"vl_total\": 1543.45,\n      \"pendencias\": 0\n    },\n    {\n      \"numero\": \"112655\",\n      \"vl_total\": 123.58,\n      \"pendencias\": 3\n    }\n  ]\n}",
           "type": "json"
         }
       ]
@@ -7194,6 +7187,7 @@ define({ "api": [
     "version": "1.0.0",
     "name": "postVendasItens",
     "group": "Vendas",
+    "description": "<p>Caso já exista na venda um produto com o mesmo ID (código), posição de grade e desconto, então a quantidade e valores informados na requisição serão adicionados ao produto já existente.</p>",
     "header": {
       "fields": {
         "Header": [
@@ -7229,7 +7223,7 @@ define({ "api": [
             "type": "String",
             "optional": false,
             "field": "id_produto",
-            "description": "<p>ID (código) do produto.</p>"
+            "description": "<p>ID (código) do produto a ser inserido na venda.</p>"
           },
           {
             "group": "Parameter",
@@ -7261,6 +7255,13 @@ define({ "api": [
           },
           {
             "group": "Parameter",
+            "type": "String",
+            "optional": false,
+            "field": "id_tab_preco",
+            "description": "<p>ID da tabela de preço do produto.</p>"
+          },
+          {
+            "group": "Parameter",
             "type": "Number",
             "optional": false,
             "field": "preco",
@@ -7271,7 +7272,7 @@ define({ "api": [
             "type": "Number",
             "optional": false,
             "field": "pdesc",
-            "description": "<p>Percentual de desconto concedido no produto.</p>"
+            "description": "<p>Percentual de desconto concedido no preço unitário do produto.</p>"
           },
           {
             "group": "Parameter",
@@ -7279,6 +7280,13 @@ define({ "api": [
             "optional": false,
             "field": "promocao",
             "description": "<p>Indica se o produto foi vendido com preço de promoção.</p>"
+          },
+          {
+            "group": "Parameter",
+            "type": "String",
+            "optional": true,
+            "field": "id_loja_sep",
+            "description": "<p>ID da loja de separação do produto, caso a mesma seja diferente da loja atual.</p>"
           }
         ]
       }
