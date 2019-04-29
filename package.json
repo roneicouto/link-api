@@ -10,6 +10,7 @@
     "body-parser": "^1.18.3",
     "cnpj": "^2.0.0",
     "consign": "^0.1.6",
+    "cors": "^2.8.5",
     "cpf": "^2.0.1",
     "dotenv-safe": "^6.1.0",
     "express": "^4.16.4",
