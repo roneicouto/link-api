@@ -27,14 +27,13 @@ module.exports = class PreVenda {
 
   findByPeriodo(query) {
     
-    if (! query.page || query.page <= 0) 
-      throw new createError.BadRequest('Página não informada!')
-    if (! query.rows || query.rows <= 0)
-      throw new createError.BadGateway('Numero de registros por página não informado!')
     if (! query.data_ini)
       throw new createError.BadRequest('Data inicial não informada!')
     if (! query.data_fim)
       throw new createError.BadRequest('Data final não informada!')
+
+    query.page = query.page || 1
+    query.rows = query.rows || process.env.DB_PAGE_ROWS
 
     let sqlBuilder = knex(table).whereBetween('data', [query.data_ini, query.data_fim])
 

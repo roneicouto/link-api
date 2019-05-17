@@ -97,6 +97,18 @@ module.exports = class Cliente extends Cadastro {
   }
 
 
+
+  getAll(params = {}) {
+
+    params.page = params.page || 1
+    params.rows = params.rows || process.env.DB_PAGE_ROWS
+
+    return super.getAll(params)
+
+  }
+
+
+  
   async setData(row) {
 
     const results = await Promise.all([

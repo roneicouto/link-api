@@ -24,6 +24,9 @@ module.exports = class Produto extends Cadastro {
       value: this.idLoja
     })
 
+    params.page = params.page || 1
+    params.rows = params.rows || process.env.DB_PAGE_ROWS
+
     return super.getAll(params)
 
   }
