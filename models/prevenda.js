@@ -1,25 +1,24 @@
 const createError = require('http-errors')
 const knex = require('../knex/knexload')
+const table = 'vs_api_pre_vendas'
 
 module.exports = class PreVenda {
 
   constructor() {
     this.data = {}
-    this.knex = knex
-    this.table = 'vs_api_pre_vendas'
   }
 
 
   findByNumero(idLoja, numero) {
     return this.executeSql(
-      this.knex(this.table).where({ id_loja: idLoja, numero })
+      knex(table).where({ id_loja: idLoja, numero: numero.padStart(10) })
     )
   }
 
 
   findByIdVenda(idVenda) {
     return this.executeSql(
-      this.knex(this.table)
+      knex(table)
         .where({ id_venda: idVenda, situacao: 'F' })
         .orderBy(['id_loja', 'id_opcom', 'num_venda'])
     )
@@ -37,7 +36,7 @@ module.exports = class PreVenda {
     if (! query.data_fim)
       throw new createError.BadRequest('Data final não informada!')
 
-    let sqlBuilder = this.knex(this.table).whereBetween('data', [query.data_ini, query.data_fim])
+    let sqlBuilder = knex(table).whereBetween('data', [query.data_ini, query.data_fim])
 
     if (query.id_loja) 
       sqlBuilder.where('id_loja', query.id_loja)
@@ -98,7 +97,7 @@ module.exports = class PreVenda {
 
   static async getPendencias(idPrevenda) {
 
-    const rows = await this.knex('vs_prevendas_validacoes')
+    const rows = await knex('vs_prevendas_validacoes')
       .select('id_item', 'tipo_vld', 'descricao')
       .where({ id_pvenda: idPrevenda, pendente: true })
       .orderBy('coalesce(id_item, 0)')
@@ -110,7 +109,7 @@ module.exports = class PreVenda {
   
   static async getItens(idLoja, numero) {
 
-    const rows = await this.knex('vs_api_pre_vendas_itens')
+    const rows = await knex('vs_api_pre_vendas_itens')
       .where({ id_loja: idLoja, numero: numero.padStart(10) })
       .orderBy('seq')
 

@@ -9,7 +9,7 @@ module.exports = (app) => {
     req.body.id         = ''
     req.body.id_loja    = req.login.idLoja      
     req.body.id_usuario = req.login.usuario.data.id       
-    this.saveCliente(true, req.body)
+    saveCliente(true, req.body)
       .then(result => res.status(result.sucesso ? 200 : 400).json(result))
       .catch(error => next(error))
 
@@ -22,7 +22,7 @@ module.exports = (app) => {
     req.body.id         = req.params.id
     req.body.id_loja    = req.login.idLoja      
     req.body.id_usuario = req.login.usuario.data.id       
-    this.saveCliente(false, req.body)
+    saveCliente(false, req.body)
       .then(result => res.status(result.sucesso ? 200 : 400).json(result))
       .catch(error => next(error))
 

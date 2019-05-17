@@ -1,4 +1,4 @@
-const knex = require('knex')
+const knex = require('../knex/knexload')
 
 module.exports = class Venda {
 
@@ -12,9 +12,9 @@ module.exports = class Venda {
     if (msg.length > 0) 
       return {sucesso: false, erros: msg}
 
-    let rows =  await knex.raw('SELECT api_venda_excluir( ? ) as sucesso', JSON.stringify(data))
+    const { rows } = await knex.raw('SELECT api_venda_excluir( ? ) as sucesso', JSON.stringify(data))
   
-    return {sucesso: rows[0].sucesso}
+    return { sucesso: rows[0].sucesso }
   
   }
 
@@ -34,9 +34,9 @@ module.exports = class Venda {
     if (msg.length > 0) 
       return {sucesso: false, erros: msg}
 
-    let rows = await knex.raw('SELECT api_venda_excluir_item( ? ) as sucesso', JSON.stringify(item))
+    const { rows } = await knex.raw('SELECT api_venda_excluir_item( ? ) as sucesso', JSON.stringify(item))
   
-    return {sucesso: rows[0].sucesso}
+    return { sucesso: rows[0].sucesso }
   
   }
 
@@ -125,7 +125,7 @@ module.exports = class Venda {
     if (msg.length > 0) 
       return {sucesso: false, erros: msg}
 
-    const rows = await knex.raw('SELECT api_venda_salvar_item( ? ) as result', jSON.stringify(item))
+    const { rows } = await knex.raw('SELECT api_venda_salvar_item( ? ) as result', JSON.stringify(item))
 
     return {
       sucesso: true, 
@@ -165,10 +165,10 @@ module.exports = class Venda {
     if (msg.length > 0) 
       return {sucesso: false, erros: msg}
 
-    const rows = await knex.raw(`SELECT api_venda_gerar_${ tipoDoc==='PV' ? 'prevenda' : 'orcamento' }( ? ) as result`,
-                                JSON.stringify(venda))
+    const { rows } = await knex.raw(`SELECT api_venda_gerar_${ tipoDoc==='PV' ? 'prevenda' : 'orcamento' }( ? ) as result`,
+                                  JSON.stringify(venda))
 
-                                return {
+    return {
       sucesso: true,
       ...JSON.parse(rows[0].result)
     }
@@ -188,7 +188,7 @@ module.exports = class Venda {
   }
 
 
-  
+
   static async mudarTabelaPreco(venda) {
     let msg = []
     venda.id_venda = parseInt(venda.id_venda || 0)
@@ -201,7 +201,7 @@ module.exports = class Venda {
     if (msg.length > 0)
       return {sucesso: false, erros: msg}
 
-    const rows = await knex.raw('SELECT api_venda_mudar_tab_preco( ? ) as result', JSON.stringify(venda))
+    const { rows } = await knex.raw('SELECT api_venda_mudar_tab_preco( ? ) as result', JSON.stringify(venda))
 
     return {
       sucesso: true,

@@ -65,9 +65,9 @@ module.exports = class Cliente extends Cadastro {
     if (msg.length > 0) 
       return {sucesso: false, erros: msg}
 
-    [this.data.id] = await this.knex.raw('SELECT api_salvar_cliente( ? ) as id', JSON.stringify(data))
+    const { rows } = await this.knex.raw('SELECT api_salvar_cliente( ? ) as id', JSON.stringify(data))
 
-    return {sucesso: true, id_cliente: this.data.id}
+    return { sucesso: true, id_cliente: rows[0].id }
 
   }
 
@@ -118,7 +118,7 @@ module.exports = class Cliente extends Cadastro {
 
 
   static async delete(id) {
-    const rows = await this.knex.raw('SELECT api_excluir_cliente( ? ) as sucesso', id)
+    const { rows } = await knex.raw('SELECT api_excluir_cliente( ? ) as sucesso', id)
     return {sucesso: rows[0].sucesso}
   }
 
