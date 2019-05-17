@@ -1,139 +1,92 @@
 const createError = require('http-errors')
 const PreVenda = require('../../models/prevenda')
 const Venda = require('../../models/venda')
-const AnalisePreVenda = require('../../models/analiseprevenda')
 
-
-class RotaPreVenda {
+module.exports = (app) => {
   
-  constructor(app) {
-    this.app = app
-    this.setRouteGetNumero()
-    this.setRouteGetItens()
-    this.setRouteGetPeriodo()
-    this.setRoutePost()
-    this.setRoutePut()
-    this.setRouteGetPendencias()
-  }
+  const path = app.get('path-api') + '/prevendas'
 
 
-  setRoutePost() {
-    const route = this.app.route(this.app.get('path-api') + '/prevendas')    
-    route.post((req, res, next) => {
+  app.post(path, (req, res, next) => {
 
-      req.body.id_loja     = req.login.idLoja
-      req.body.id_usuario  = req.login.usuario.data.id
-      req.body.id_vendedor = req.login.usuario.data.id_vendedor
-      Venda.gerarPreVenda(req.body)
-        .then(result => res.status(result.sucesso ? 200 : 400).json(result))
-        .catch(error => next(error))
-
-    })
-  }
-
-
-  setRoutePut() {
-    const route = this.app.route(this.app.get('path-api') + '/prevendas/:numero')
-    route.put((req, res, next) => {
-
-      this.savePreVenda(false, req)
-        .then(result => res.status(result.sucesso ? 200 : 400).json(result))
-        .catch(error => next(error))
-
-    })
-  }
-
-
-  async savePreVenda(novo, req) {
-    const prevenda = new PreVenda()
     req.body.id_loja     = req.login.idLoja
     req.body.id_usuario  = req.login.usuario.data.id
-    req.body.numero      = req.params.numero || ''
-    prevenda.data        = req.body
-    let result = novo ? await prevenda.create() : await prevenda.update()
-    if (result.sucesso) {
-      let analise = await AnalisePreVenda.getInstance(result.id_loja, result.numero, data.id_usuario)
-      result.pendencias = analise.pendencias.length
-    }
-    return result
-  }
-  
+    req.body.id_vendedor = req.login.usuario.data.id_vendedor
+    Venda.gerarPreVenda(req.body)
+      .then(result => res.status(result.sucesso ? 200 : 400).json(result))
+      .catch(error => next(error))
 
-  setRouteGetNumero() {
-    const route = this.app.route(this.app.get('path-api') + '/prevendas/:numero')    
-    route.get((req, res, next) => {
-
-      this.buscarPreVenda(req)
-        .then(prevenda => res.status(200).json(prevenda))
-        .catch(error => next(error))
-
-    })
-  }
+  })
 
 
-  setRouteGetItens() {
-    const route = this.app.route(this.app.get('path-api') + '/prevendas/:numero/itens')    
-    route.get((req, res, next) => {
 
-      this.buscarPreVenda(req)
-        .then(prevenda => res.status(200).json(prevenda.itens))
-        .catch(error => next(error))
+  app.get(path + '/:numero', (req, res, next) => {
 
-    })
-  }
+    buscarPreVenda(req)
+      .then(result => res.status(200).json(result))
+      .catch(error => next(error))
+
+  })
 
 
-  setRouteGetPendencias() {
-    const route = this.app.route(this.app.get('path-api') + '/prevendas/:numero/pendencias')    
-    route.get((req, res, next) => {
 
-      this.buscarPreVenda(req)
-        .then(prevenda => PreVenda.getPendencias(prevenda.id_prevenda))
-        .then(pendencias => res.status(200).json(pendencias))
-        .catch(error => next(error))
+  app.get(path + '/:numero/itens', (req, res, next) => {
 
-    })
-  }
+    buscarPreVenda(req)
+      .then(result => res.status(200).json(result.itens))
+      .catch(error => next(error))
+
+  })
 
 
-  async buscarPreVenda(req) {
-    let idLoja = req.login.idLoja
-    let numero = req.params.numero
-    let prevenda = await PreVenda.getInstance(idLoja, numero)
 
-    if (! prevenda.data) 
-      throw new createError.NotFound('Pré-venda ' + numero + ' não encontrada na loja ' + idLoja + ' !')
-    
-    if (prevenda.data.id_vendedor !== req.login.usuario.data.id_vendedor) 
-      throw new createError.Unauthorized('Acesso não autorizado à pré-venda ' + numero + ' da loja ' + idLoja + ' !')      
-  
-    return prevenda.data
-  }
+  app.get(path + '/:numero/pendencias', (req, res, next) => {
+
+    this.buscarPreVenda(req)
+      .then(prevenda => PreVenda.getPendencias(prevenda.id_prevenda))
+      .then(pendencias => res.status(200).json(pendencias))
+      .catch(error => next(error))
+
+  })
 
 
-  setRouteGetPeriodo() {
-    const route = this.app.route(this.app.get('path-api') + '/prevendas')    
-    route.get( (req, res, next) => {
 
-      const getPreVendas = async () => {
-        req.query.id_loja     = req.login.idLoja
-        req.query.id_vendedor = req.login.usuario.data.id_vendedor
-        let lista = await new PreVenda().findByPeriodo(req.query)
-        if (! lista.length) {
-          throw new createError.NotFound('Pré-vendas não encontradas!')
-        }
-        return lista.map(prevenda => prevenda.data)
+  app.get(path, (req, res, next) => {
+
+    const getPreVendas = async () => {
+      req.query.id_loja     = req.login.idLoja
+      req.query.id_vendedor = req.login.usuario.data.id_vendedor
+      let lista = await new PreVenda().findByPeriodo(req.query)
+      if (! lista.length) {
+        throw new createError.NotFound('Pré-vendas não encontradas!')
       }
-      
-      getPreVendas()
-        .then(lista => res.status(200).json(lista))
-        .catch(error => next(error))
+      return lista.map(prevenda => prevenda.data)
+    }
+    
+    getPreVendas()
+      .then(lista => res.status(200).json(lista))
+      .catch(error => next(error))
 
-    })
-  }
+  })
+
 }
 
-module.exports = (app) => new RotaPreVenda(app)
+
+
+async function buscarPreVenda(req) {
+  let idLoja = req.login.idLoja
+  let numero = req.params.numero
+  let prevenda = await PreVenda.getInstance(idLoja, numero)
+
+  if (! prevenda.data) 
+    throw new createError.NotFound('Pré-venda ' + numero + ' não encontrada na loja ' + idLoja + ' !')
+  
+  if (prevenda.data.id_vendedor !== req.login.usuario.data.id_vendedor) 
+    throw new createError.Unauthorized('Acesso não autorizado à pré-venda ' + numero + ' da loja ' + idLoja + ' !')      
+
+  return prevenda.data
+}
+
 
 
 /**

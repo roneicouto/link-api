@@ -1,7 +1,7 @@
 const createError = require('http-errors')
-const Cadastro = require('./cadastro')
 
 module.exports = class RotaCadastro {
+
   constructor(app, route, ClassCadastro) {
     this.cadastro = new ClassCadastro()
     this.route    = app.route(app.get('path-api') + route)
@@ -9,23 +9,35 @@ module.exports = class RotaCadastro {
   }
 
   setRouteGet() {
+
     this.route.get( (req, res, next) => {
-      if (! this.cadastro.getAll) {
-        throw new createError.BadRequest('Método getAll não implementado!')
+
+      const params = { 
+        page: parseInt(req.query.page) || 0,
+        rows: parseInt(req.query.rows) || 0,
+        order: [req.query.order || 'id']
       }
-      let order = req.query.order || 'id'
-      let value = req.query.value || ''
-      let page  = parseInt(req.query.page) || 0      
-      this.cadastro.getAll({field: order, value: value, order: 1}, page)
-        .then(lista => {
-          if (! lista.length) {
+
+      if (req.query.value) {
+        params.where = [{ 
+          field: params.order[0],
+          operator: '~',
+          value: req.query.value
+        }]
+      }
+
+      this.cadastro.getAll(params)
+        .then(rows => {
+          if (! rows.length) {
             throw new createError.NotFound('Registros não encontrados!')
           } 
-          res.status(200).json(lista.map( e => e.data))
+          res.status(200).json(rows)
         })
         .catch(error =>next(error))
     })
+
   }
+
 
   setRouteGetId() {
     this.routeID.get( (req, res, next) => {
@@ -36,7 +48,7 @@ module.exports = class RotaCadastro {
         promise = this.cadastro.findById(req.params.id)
       else 
         throw new createError.BadRequest('Método find() ou findById() não implementado!')
-      
+
       promise
         .then( found => {
           if (! found) {

@@ -1,5 +1,4 @@
 const Cadastro = require('../classes/cadastro')
-const db = require('../utils/db')
 
 module.exports = class PlanoPagamento extends Cadastro {
 
@@ -8,20 +7,24 @@ module.exports = class PlanoPagamento extends Cadastro {
   }
 
   async setData(plano) {  
-    let promises = await Promise.all([
-      db.query('SELECT * FROM vs_api_planos_pag_tab_precos WHERE id_plano_pag = $1', [plano.id]),
-      db.query('SELECT * FROM vs_api_planos_pag_produtos   WHERE id_plano_pag = $1', [plano.id])
+
+    const results = await Promise.all([
+      this.knex('vs_api_planos_pag_tab_precos').where('id_plano_pag', plano.id),
+      this.knex('vs_api_planos_pag_produtos'  ).where('id_plano_pag', plano.id)
     ])
-    plano.tabelas = []
-    promises[0].rows.forEach(row => plano.tabelas.push(row.id_tab_preco))
-    plano.produtos = []            
-    promises[1].rows.forEach(row => plano.produtos.push(row))    
+
+    plano.tabelas = []    
+    plano.produtos = []                
+
+    results[0].forEach(row => plano.tabelas.push(row.id_tab_preco))
+    results[1].forEach(row => plano.produtos.push(row))    
+
     return plano
   }
 
 
   validateProduto(produto) {
-    let success = this.data.produtos.every(r => (
+    const success = this.data.produtos.every(r => (
       ( !r.ini_id_produto    || produto.id >= r.ini_id_produto ) &&
       ( !r.fim_id_produto    || produto.id <= r.fim_id_produto ) &&
       ( !r.ini_classificacao || produto.classificacao >= r.ini_classificacao ) &&
@@ -36,9 +39,8 @@ module.exports = class PlanoPagamento extends Cadastro {
 
 
   static async getPermissoesUsuario(idPlano, idNivel) {
-    let resp = await db.query('SELECT * FROM vs_api_planos_pag_restricoes WHERE id_plano_pag = $1 and id_nivel = $2', 
-                              [idPlano, idNivel])
-    return resp.rows.length ? resp.rows[0] : {}
+    const rows = await this.knex('vs_api_planos_pag_restricoes').where({ id_plano_pag: idPlano, id_nivel: idNivel })
+    return rows.length ? rows[0] : {}
   }
 
 
@@ -47,4 +49,3 @@ module.exports = class PlanoPagamento extends Cadastro {
   }
 
 }
-

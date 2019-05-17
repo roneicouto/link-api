@@ -1,6 +1,6 @@
 const createError = require('http-errors')
-const db = require('../utils/db')
 const Cadastro = require('../classes/cadastro')
+const knex = require('../knex/knexload')
 
 module.exports = class Produto extends Cadastro {
 
@@ -9,28 +9,59 @@ module.exports = class Produto extends Cadastro {
     this.idLoja = ''
   }
 
-  getAll(params, page) {
-    params = Array.isArray(params) ? params : [params]
-    params.push({field: 'id_loja', value: this.idLoja})
-    return super.getAll(params, page)
+
+
+  getAll(params = {}) {
+
+    params.where = params.where || []
+
+    if (! Array.isArray(params.where)) 
+      params.where = [params.where]  
+    
+    params.where.push({
+      field: 'id_loja',
+      operator: '=',
+      value: this.idLoja
+    })
+
+    return super.getAll(params)
+
   }
 
-  findByDescricao(descricao, page) {
+
+
+  findByDescricao(descricao, page, rows) {
+
     return this.getAll({
-      field: 'descricao', 
-      value: '^' + descricao,
-      order: 1
-    }, page)
+      page,
+      rows,
+      where: [{
+        field: 'descricao',
+        operator: '~',
+        value: '^' + descricao        
+      }],
+      order: ['descricao']
+    })
+
   }
 
 
-  findByDescricaoParcial(descricao, page) {
+
+  findByDescricaoParcial(descricao, page, rows) {
+
     return this.getAll({
-        field: 'descricao', 
-        value: descricao,
-        order: 1
-    }, page)
+      page,
+      rows,
+      where: [{
+        field: 'descricao',
+        operator: '~',
+        value: descricao        
+      }],
+      order: ['descricao']
+    })
+
   }
+
 
 
   findByCodigoBarras(codBarras) {
@@ -38,148 +69,120 @@ module.exports = class Produto extends Cadastro {
   }
 
 
+
   findByReferencia(referencia) {
     return this.findByField('referencia', '=', referencia)
   }
 
 
-  executeSql(page = 0) {
-    return new Promise((resolve, reject) => {
-      if (! this.idLoja) {
-        throw new createError.BadRequest('Loja não informada na busca de produto!')
-      }
-      let oldSql = {...this.sql}
-      this.sql.params.push(this.idLoja)
-      this.sql.where += ( this.sql.params.length > 1 ? ' AND' : '' ) +' id_loja = $' + this.sql.params.length
-      super.executeSql(page)
-        .then(found => resolve(found))
-        .catch(error=> reject(error))
-        .finally(() => {this.sql = oldSql})
-    })
-  }
 
+  executeSql(sqlBuilder) {
 
-  static precoVenda(idProduto, idLoja, idTabela) {
-    return new Promise((resolve, reject) =>{
-      let params, sql
-      params = [idProduto, idLoja]
-      if (idTabela) params.push(idTabela)
-      sql = `SELECT 
-              id_tab_preco, 
-              nome_tab_preco,
-              preco_venda,
-              preco_promocao
-            FROM 
-              vs_api_produtos_precos 
-            WHERE 
-              id_produto = $1 and id_loja = $2
-              ${ idTabela ? 'and id_tab_preco = $3' : '' }
-            ORDER BY
-              id_tab_preco`
-      db.query(sql, params)
-        .then(({rows}) => resolve(! idTabela ? rows : rows.length > 0 ? rows[0] : {}))
-        .catch(error => reject(error))
-    })
-  }
-
-
-  static precoTabela(idProduto, idLoja, idTabela) {
-    return new Promise((resolve, reject) => {
-      Produto.precoVenda(idProduto, idLoja, idTabela)
-        .then(preco => resolve( preco.preco_venda || 0))
-        .catch(error => reject(error))
-    })
-  }
-
-
-  static precoVendaPlano(idProduto, idLoja, idTabela, idPlano) {
-    return new Promise((resolve, reject) => {
-      let params, sql
-      params = [idProduto, idLoja, idTabela]
-      if (idPlano) params.push(idPlano)
-      sql = `SELECT 
-              id_plano_pag, 
-              nome_plano_pag,
-              forma_pag,
-              preco_venda
-            FROM 
-              vs_api_produtos_precos_planos 
-            WHERE 
-              id_produto = $1 and id_loja = $2 and id_tab_preco = $3
-              ${ idPlano ? 'and id_plano_pag = $4' : '' }
-            ORDER BY
-              id_plano_pag`
-      db.query(sql, params)
-        .then(({rows}) => resolve(! idPlano ? rows : rows.length > 0 ? rows[0] : {}))
-        .catch(error => reject(error))
-    })
-  }
-
-
-  static estoqueLoja(idProduto, idLoja) {
-    return new Promise((resolve, reject) => {
-      let params, sql
-      params = [idProduto]
-      if (idLoja) params.push(idLoja)
-      sql = `SELECT 
-              id_loja, 
-              nome_loja,
-              saldo_loja,
-              saldo_dep,
-              saldo_loja_frc,
-              saldo_dep_frc
-            FROM 
-              vs_api_produtos 
-            WHERE 
-              id = $1
-              ${ idLoja ? 'and id_loja = $2 ' : ''}
-            ORDER BY
-              id_loja`
-      db.query(sql, params)
-        .then(({rows}) => resolve(! idLoja ? rows : rows.length > 0 ? rows[0] : {}))
-        .catch(error => reject(error))
-    })
-  }
-
-
-  static estoqueLojaGrade(idProduto, idLoja, posGrade) {
-    return new Promise((resolve, reject) => {
-      let params, sql
-      params = [idProduto, idLoja]
-      if (posGrade) params.push(posGrade)
-      sql = `SELECT 
-              pos_grade, 
-              descr_linha,
-              descr_coluna,
-              saldo_loja,
-              saldo_dep,
-              saldo_loja_frc,
-              saldo_dep_frc
-            FROM 
-              vs_api_produtos_grades
-            WHERE 
-              id_produto = $1 and id_loja = $2
-              ${ posGrade ? 'and pos_grade = $3 ' : ''}                  
-            ORDER BY
-              pos_grade`
-      db.query(sql, params)
-        .then(({rows}) => resolve(! posGrade ? rows : rows.length > 0 ? rows[0] : {} ))
-        .catch(error => reject(error))
-    })
-  }
-
-
-  static getInstance(idProduto, idLoja) {
-    if (! idLoja) {
+    if (! this.idLoja)
       throw new createError.BadRequest('Loja não informada na busca do produto!')
-    }
-    return new Promise((resolve, reject) => {
-      let obj = new Produto()
-      obj.idLoja = idLoja
-      obj.findById(idProduto)
-        .then(found => resolve(found ? obj : {}))
-        .catch(error => reject(error))
-    })
+
+    sqlBuilder.where('id_loja', this.idLoja)
+
+    return super.executeSql(sqlBuilder)
+
+  }
+
+
+
+  static async precoVenda(idProduto, idLoja, idTabela) {
+
+    const sqlBuilder = knex('vs_api_produtos_precos')
+      .select('id_tab_preco', 'nome_tab_preco', 'preco_venda', 'preco_promocao')
+      .orderBy('id_tab_preco')
+      .where({ id_produto: idProduto, id_loja: idLoja })
+
+    if (idTabela)
+      sqlBuilder.where('id_tab_preco', idTabela)
+
+    const rows = await sqlBuilder
+
+    return !idTabela ? rows : rows.length > 0 ? rows[0] : {}
+
+  }
+
+
+
+  static async precoTabela(idProduto, idLoja, idTabela) {
+
+    const preco = await Produto.precoVenda(idProduto, idLoja, idTabela)
+
+    return preco.preco_venda || 0
+
+  }
+
+
+
+  static async precoVendaPlano(idProduto, idLoja, idTabela, idPlano) {
+
+    const sqlBuilder = knex('vs_api_produtos_precos_planos')
+      .select('id_plano_pag', 'nome_plano_pag', 'forma_pag', 'preco_venda')
+      .orderBy('id_plano_pag')
+      .where({ id_produto: idProduto, id_loja: idLoja, id_tab_preco: idTabela})
+
+    if (idPlano)
+      sqlBuilder.where('id_plano_pag', idPlano)
+
+    const rows = await sqlBuilder
+
+    return !idPlano ? rows : rows.length > 0 ? rows[0] : {}
+
+  }
+
+
+
+  static async estoqueLoja(idProduto, idLoja) {
+
+    const sqlBuilder = knex('vs_api_produtos')
+      .select('id_loja', 'nome_loja', 'saldo_loja', 'saldo_dep', 'saldo_loja_frc', 'saldo_dep_frc')
+      .orderBy('id_loja')
+      .where('id', idProduto)
+
+    if (idLoja)
+      sqlBuilder.where('id_loja', idLoja)
+
+    const rows = await sqlBuilder
+
+    return !idLoja ? rows : rows.length > 0 ? rows[0] : {}
+
+  }
+
+
+
+  static async estoqueLojaGrade(idProduto, idLoja, posGrade) {
+
+    const sqlBuilder = knex('vs_api_produtos_grades')
+      .select('pos_grade', 'descr_linha', 'descr_coluna', 'saldo_loja', 'saldo_dep', 'saldo_loja_frc', 'saldo_dep_frc')
+      .orderBy('pos_grade')
+      .where({ id_produto: idProduto, id_loja: idLoja })
+
+    if (posGrade)
+      sqlBuilder.where('pos_grade', posGrade)
+
+    const rows = await sqlBuilder
+
+    return !posGrade ? rows : rows.length > 0 ? rows[0] : {}    
+    
+  }
+
+
+
+  static async getInstance(idProduto, idLoja) {
+
+    if (! idLoja) 
+      throw new createError.BadRequest('Loja não informada na busca do produto!')
+
+    const prod = new Produto()
+    prod.idLoja = idLoja
+
+    const found = await prod.findById(idProduto)
+
+    return found ? prod : {}
+
   }
 
 }

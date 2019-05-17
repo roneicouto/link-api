@@ -1,9 +1,9 @@
-const db = require('../utils/db')
 const utils = require('../utils/utils')
 const Cadastro = require('../classes/cadastro')
 const Municipio = require('../models/municipio')
 const UF = require('../models/uf')
 const Loja = require('../models/loja')
+const knex = require('../knex/knexload')
 
 module.exports = class Cliente extends Cadastro {
 
@@ -65,16 +65,11 @@ module.exports = class Cliente extends Cadastro {
     if (msg.length > 0) 
       return {sucesso: false, erros: msg}
 
-    let cmdSql = 'SELECT api_salvar_cliente( $1 ) as id'
-    
-    let {rows} = await db.query(cmdSql, [JSON.stringify(data)])
-
-    this.data.id = rows[0].id
+    [this.data.id] = await this.knex.raw('SELECT api_salvar_cliente( ? ) as id', JSON.stringify(data))
 
     return {sucesso: true, id_cliente: this.data.id}
 
   }
-
 
 
   find(id) {
@@ -82,58 +77,57 @@ module.exports = class Cliente extends Cadastro {
   }
 
 
-  findByNome(nome, page) {
+  findByNome(nome, page, rows) {
     return this.getAll({
-      field: 'nome',
-      value: '^' + nome
-    }, page)
-  }
-
-
-  findByNomeFantasia(nome, page) {
-    return this.getAll({
-      field: 'nome_fantasia',
-      value: '^' + nome
-    }, page)
-  }
-
-
-  setData(row) {
-    return new Promise((resolve, reject) =>{
-
-      let promises = [
-        db.query('SELECT * FROM vs_api_clientes_planos_pag WHERE id_cliente = $1', [row.id]),
-        db.query('SELECT * FROM vs_api_clientes_tab_precos WHERE id_cliente = $1', [row.id]),
-        Cliente.getResumoFinanceiro(row)
-      ]
-
-      row.planos  = []
-      row.tabelas = []
-  
-      Promise.all(promises)
-        .then(results => {
-          results[0].rows.forEach(r => row.planos.push(r.id_plano_pag))
-          results[1].rows.forEach(r => row.tabelas.push(r.id_tab_preco))        
-          row.financeiro = results[2]
-          resolve(row)
-        })
-        .catch(error => reject(error))
-
+      page,
+      rows,
+      where: [{ field: 'nome', operator: '~', value: '^' + nome }],
+      order: ['nome']
     })
   }
 
 
+  findByNomeFantasia(nome, page, rows) {
+    return this.getAll({
+      page,
+      rows,
+      where: [{ field: 'nome_fantasia', operator: '~', value: '^' + nome }],
+      order: ['nome_fantasia']
+    })
+  }
+
+
+  async setData(row) {
+
+    const results = await Promise.all([
+      this.knex('vs_api_clientes_planos_pag').where('id_cliente', row.id),
+      this.knex('vs_api_clientes_tab_precos').where('id_cliente', row.id),
+      Cliente.getResumoFinanceiro(row)
+    ])
+
+    row.planos  = []
+    row.tabelas = []
+
+    results[0].forEach(r => row.planos.push(r.id_plano_pag))
+    results[1].forEach(r => row.tabelas.push(r.id_tab_preco))        
+    row.financeiro = results[2]
+
+    return row
+
+  }
+
+
   static async delete(id) {
-    let {rows} = await db.query('SELECT api_excluir_cliente($1) as sucesso', [id])
+    const rows = await this.knex.raw('SELECT api_excluir_cliente( ? ) as sucesso', id)
     return {sucesso: rows[0].sucesso}
   }
 
 
   static async getResumoFinanceiro(cliente) {
 
-    let results = await Promise.all([
-      db.query('SELECT * FROM vs_api_contas_receber WHERE id_cliente = $1', [cliente.id]),
-      db.query('SELECT * FROM vs_api_cheques WHERE id_cliente = $1 and situacao = $2', [cliente.id, '2'])        
+    const results = await Promise.all([
+      knex('vs_api_contas_receber').where({ id_cliente: cliente.id }),
+      knex('vs_api_cheques'       ).where({ id_cliente: cliente.id, situacao: '2' })
     ])
 
     let dias_atraso = 0
@@ -143,14 +137,14 @@ module.exports = class Cliente extends Cadastro {
     let cheques_devol = 0
     let limite_disp = 0
 
-    results[0].rows.forEach(r => {
+    results[0].forEach(r => {
       dias_atraso   = Math.max(dias_atraso, r.dias)
       saldo_devedor += r.saldo
       saldo_acordos += r.acordo ? r.saldo : 0      
       debito_atraso += r.dias > 0 ? r.saldo : 0
     })
 
-    results[1].rows.forEach(r => cheques_devol += r.valor)          
+    results[1].forEach(r => cheques_devol += r.valor)          
 
     saldo_devedor = utils.roundVal(saldo_devedor)
     saldo_acordos = utils.roundVal(saldo_acordos)

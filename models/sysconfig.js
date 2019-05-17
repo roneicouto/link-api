@@ -1,12 +1,13 @@
-const db = require('../utils/db')
+const knex = require('../knex/knexload')
 
 module.exports = class SysConfig {
 
   static async getConfig() {
-    let config = new SysConfig()
-    let result = await db.query('SELECT * FROM vs_api_config')
-    if (result.rows.length > 0) {
-      Object.assign(config, result.rows[0])
+    const config = new SysConfig()
+    const rows = await knex.from('vs_api_config')
+
+    if (rows.length > 0) {
+      Object.assign(config, rows[0])
     }
     return config
   }

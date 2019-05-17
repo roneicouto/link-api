@@ -57,3 +57,4 @@ exports.cpfValido = numCPF => {
 exports.cnpjValido = numCNPJ => {
   return numCNPJ && /^\d{14}$/.test(numCNPJ) && CNPJ.validate(numCNPJ)
 }
+

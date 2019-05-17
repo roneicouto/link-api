@@ -1,133 +1,108 @@
 const Venda = require('../../models/venda')
 
-class RotaVenda {
+module.exports = (app) => {
+
+  const path = app.get('path-api') + '/vendas'
+  const pathItem = path + '/:id_venda/itens/:id_tem'
   
-  constructor(app) {
-    this.app = app
-    this.setRouteAlterarTabPreco()    
-    this.setRoutePostItem()
-    this.setRoutePutItem()
-    this.setRouteDeleteItem()
-    this.setRouteDeleteVenda()
-    this.setRouteGetItem()
-    this.setRouteGetVendas()
-}
+
+  app.post(path + '/:id_venda?/itens', (req, res, next) => {
+
+    req.body.id_venda   = req.params.id_venda      
+    req.body.id_loja    = req.login.idLoja
+    req.body.id_usuario = req.login.usuario.data.id
+    Venda.saveItem(req.body)
+      .then(result => res.status(result.sucesso ? 200 : 400).json(result))
+      .catch(error => next(error))
+
+  })
 
 
-  setRoutePostItem() {
-    const route = this.app.route(this.app.get('path-api') + '/vendas/:id_venda?/itens')    
-    route.post((req, res, next) => {
 
-      req.body.id_venda   = req.params.id_venda      
-      req.body.id_loja    = req.login.idLoja
-      req.body.id_usuario = req.login.usuario.data.id
-      Venda.saveItem(req.body)
-        .then(result => res.status(result.sucesso ? 200 : 400).json(result))
-        .catch(error => next(error))
+  app.put(pathItem, (req, res, next) => {
 
-    })
-  }
+    req.body.id_venda   = req.params.id_venda
+    req.body.id_item    = req.params.id_item
+    req.body.id_loja    = req.login.idLoja
+    req.body.id_usuario = req.login.usuario.data.id      
+    Venda.saveItem(req.body)
+      .then(result => res.status(result.sucesso ? 200 : 400).json(result))
+      .catch(error => next(error))
 
-
-  setRoutePutItem() {
-    const route = this.app.route(this.app.get('path-api') + '/vendas/:id_venda/itens/:id_item')
-    route.put((req, res, next) => {
-
-      req.body.id_venda   = req.params.id_venda
-      req.body.id_item    = req.params.id_item
-      req.body.id_loja    = req.login.idLoja
-      req.body.id_usuario = req.login.usuario.data.id      
-      Venda.saveItem(req.body)
-        .then(result => res.status(result.sucesso ? 200 : 400).json(result))
-        .catch(error => next(error))
-
-    })
-  }
+  })
 
 
-  setRouteDeleteItem() {
-    const route = this.app.route(this.app.get('path-api') + '/vendas/:id_venda/itens/:id_item')    
-    route.delete((req, res, next) => {
 
-      req.body.id_venda   = req.params.id_venda      
-      req.body.id_item    = req.params.id_item
-      req.body.id_loja    = req.login.idLoja
-      req.body.id_usuario = req.login.usuario.data.id            
+  app.delete(pathItem, (req, res, next) => {
 
-      Venda.deleteItem(req.body) 
-        .then(result => res.status(result.sucesso ? 200 : 400).json(result))
-        .catch(error => next(error))
+    req.body.id_venda   = req.params.id_venda      
+    req.body.id_item    = req.params.id_item
+    req.body.id_loja    = req.login.idLoja
+    req.body.id_usuario = req.login.usuario.data.id            
 
-    })
-  }
+    Venda.deleteItem(req.body) 
+      .then(result => res.status(result.sucesso ? 200 : 400).json(result))
+      .catch(error => next(error))
+
+  })
 
 
-  setRouteDeleteVenda() {
-    const route = this.app.route(this.app.get('path-api') + '/vendas/:id_venda')    
-    route.delete((req, res, next) => {
 
-      req.body.id_venda   = req.params.id_venda      
-      req.body.id_loja    = req.login.idLoja
-      req.body.id_usuario = req.login.usuario.data.id            
+  app.delete(path + '/:id_venda', (req, res, next) => {
 
-      Venda.delete(req.body)
-        .then(result => res.status(result.sucesso ? 200 : 400).json(result))
-        .catch(error => next(error))
+    req.body.id_venda   = req.params.id_venda      
+    req.body.id_loja    = req.login.idLoja
+    req.body.id_usuario = req.login.usuario.data.id            
 
-    })
-  }
+    Venda.delete(req.body)
+      .then(result => res.status(result.sucesso ? 200 : 400).json(result))
+      .catch(error => next(error))
+
+  })
 
 
-  setRouteGetItem() {
-    const route = this.app.route(this.app.get('path-api') + '/vendas/:id_venda/itens/:id_item?')    
-    route.get((req, res, next) => {
 
-      req.body.id_venda   = req.params.id_venda
-      req.body.id_item    = req.params.id_item
-      req.body.id_loja    = req.login.idLoja
-      req.body.id_usuario = req.login.usuario.data.id            
+  app.get(pathItem + '?', (req, res, next) => {
 
-      Venda.getItens(req.body)
-        .then(result => res.status(result.erros ? 400 : 200).json(result))
-        .catch(error => next(error))
+    req.body.id_venda   = req.params.id_venda
+    req.body.id_item    = req.params.id_item
+    req.body.id_loja    = req.login.idLoja
+    req.body.id_usuario = req.login.usuario.data.id            
 
-    })
-  }
+    Venda.getItens(req.body)
+      .then(result => res.status(result.erros ? 400 : 200).json(result))
+      .catch(error => next(error))
+
+  })
 
 
-  setRouteGetVendas() {
-    const route = this.app.route(this.app.get('path-api') + '/vendas')    
-    route.get((req, res, next) => {
 
-      req.body.id_loja    = req.login.idLoja
-      req.body.id_usuario = req.login.usuario.data.id
-      Venda.getVendas(req.body)
-        .then(result => res.status(result.sucesso ? 200 : 400).json(result))
-        .catch(error => next(error))
+  app.get(path, (req, res, next) => {
 
-    })
-  }
+    req.body.id_loja    = req.login.idLoja
+    req.body.id_usuario = req.login.usuario.data.id
+    Venda.getVendas(req.body)
+      .then(result => res.status(result.sucesso ? 200 : 400).json(result))
+      .catch(error => next(error))
+
+  })
 
 
-  setRouteAlterarTabPreco() {
-    const route = this.app.route(this.app.get('path-api') + '/vendas/:id_venda/precos')
-    route.put((req, res, next) => {
 
-      req.body.id_venda   = req.params.id_venda
-      req.body.id_loja    = req.login.idLoja
-      req.body.id_usuario = req.login.usuario.data.id
+  app.put(path + '/:id_venda/precos', (req, res, next) => {
 
-      Venda.mudarTabelaPreco(req.body)
-        .then(result => res.status(result.erros ? 400 : 200).json(result))
-        .catch(error => next(error))
+    req.body.id_venda   = req.params.id_venda
+    req.body.id_loja    = req.login.idLoja
+    req.body.id_usuario = req.login.usuario.data.id
 
-    })    
-  }
+    Venda.mudarTabelaPreco(req.body)
+      .then(result => res.status(result.erros ? 400 : 200).json(result))
+      .catch(error => next(error))
+
+  })    
 
 }
 
-
-module.exports = (app) => new RotaVenda(app)
 
 
 /** 

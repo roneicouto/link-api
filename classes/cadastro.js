@@ -1,105 +1,85 @@
 const createError = require('http-errors')
-const db = require('../utils/db')
-const SqlPage = require('../classes/sql-page')
+const knex = require('../knex/knexload')
 
 module.exports = class Cadastro {
 
   constructor(table, fieldID = 'id') {
-    this.sql = {
-      table,
-      fieldID,
-      where: '',
-      params: []
-    }
+    this.table = table
+    this.fieldID = fieldID
+    this.knex = knex
     this.data = {}
   }
 
 
   findById(id) {
-    return this.findByField(this.sql.fieldID, '=', id)
+    return this.executeSql(
+      this.knex(this.table).where(this.fieldID, id)
+    )
   }
 
 
-  findByField(field, operator, text) {
-    this.sql.where  = field + ' ' + operator + ' $1'
-    this.sql.params = [text]
-    return this.executeSql()
-  }
+	findByField(field, operator, text) {
+    return this.executeSql(
+      this.knex(this.table).where(field, operator, text).limit(1)      
+    )
+	}
 
 
-  executeSql() {
-    return new Promise((resolve, reject) => {
-      let cmdSql = 'SELECT * FROM ' + this.sql.table + ' WHERE ' + this.sql.where + ' LIMIT 1'
+	findByFilter(filter) {
+		if (typeof filter !== "object") {
+			throw new createError.BadRequest('Objeto para filtro de consulta inválido!')
+    }
+    return this.executeSql(
+      this.knex(this.table).where(filter).limit(1)
+    )
+	}
+
+
+	async executeSql(sqlBuilder) {
+    const rows = await sqlBuilder
+    if (!rows.length) {
       this.data = {}
-      db.query(cmdSql, this.sql.params)
-        .then(({ rows }) => {
-          if (! rows.length) {
-            resolve(false)
-          } else {
-            this.setData(rows[0])
-              .then(row => {
-                this.data = row
-                resolve(true)
-              })
-              .catch(error => reject(error))
-          }
-        })
-       .catch(error => reject(error))
-    })
+      return false
+    }
+    this.data = await this.setData(rows[0])
+    return true
   }
 
 
   setData(row) {
-    return Promise.resolve(row)
+	  return Promise.resolve(row)
   }
 
 
-  getAll(params, page = 0) {
-    if (page < 1) {
-      throw new createError.BadRequest('numero da página não informado!')
+  async getAll(params = {}) {
+    params.page  = params.page  || 0
+    params.rows  = params.rows  || 0
+    params.where = params.where || []
+    params.order = params.order || []
+
+    const sqlBuilder = this.knex(this.table)
+
+    if (params.page > 0) {
+      sqlBuilder.offset((params.page - 1) * params.rows)
     }
 
-    let promiseRow = (row) => {
-      return new Promise((resolve, reject) => {
-        let oCad = Object.create(this)
-        oCad.setData(row)
-          .then(row => {
-            oCad.data = row
-            resolve(oCad)
-          })
-          .catch(error => reject(error))
-      })
+    if (params.rows > 0) {
+      sqlBuilder.limit(params.rows)
     }
 
-    let cmdSql = 'SELECT * FROM ' + this.sql.table
-    let values = []
-    let orders = []
+    if (! Array.isArray(params.where)) {
+      params.where = [params.where]  
+    }
+    params.where.forEach(p => { sqlBuilder.where(p.field, p.operator, p.value) })
 
-    params = Array.isArray(params) ? params : [params]
-    params.forEach(p => {
-      if (! p.field) {
-        throw new createError.BadRequest('O atributo field não foi informado!')
-      }
-      if (p.value) {
-        values.push(p.value)
-        cmdSql += ' ' + (values.length > 1 ? 'AND' : 'WHERE') + ' ' + p.field + ' ~ $' + values.length        
-      }
-      if (p.order) {
-        orders.push(p.field + (p.order < 0 ? ' DESC' : ''))
-      }
-    })
-    
-    orders.forEach((o, i) => cmdSql += (i > 0 ? ',' : ' ORDER BY') + ' ' + o)
+    if (! Array.isArray(params.order)) {
+      params.order = [params.order]
+    }
+    params.order.forEach(o => { sqlBuilder.orderByRaw(o) })
 
-    return new Promise((resolve, reject) => {
-      let promise = page > 0 ? new SqlPage(cmdSql, values).getPage(page)
-                             : db.query(cmdSql, values)
-      promise
-        .then(resp => resp.rows.map(row => promiseRow(row)))
-        .then(promises => Promise.all(promises))
-        .then(lista => resolve(lista))
-        .catch(error => reject(error))
-    })   
+    const promises = await sqlBuilder.map(async row => Object.create(this).setData(row))
+
+    return Promise.all(promises)
   }
 
 

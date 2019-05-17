@@ -1,7 +1,6 @@
 const createError = require('http-errors')
 const jwt = require('jsonwebtoken')
 const utils = require('../utils/utils')
-const db = require('../utils/db')
 const Cadastro = require('../classes/cadastro')
 const Loja = require('./loja')
 const secretKey = '(*N0rte/L1nk)'
@@ -13,9 +12,10 @@ module.exports = class Usuario extends Cadastro {
   }
 
 
+
   async setData(user) {
 
-    let {rows} = await db.query('SELECT * FROM vs_api_usuarios_lojas WHERE id_usuario = $1', [user.id])
+    const rows = await this.knex('vs_api_usuarios_lojas').where({id_usuario: user.id})
     
     user.lojas = []
     rows.forEach(r => user.lojas.push(r.id_loja))
@@ -23,6 +23,7 @@ module.exports = class Usuario extends Cadastro {
     return user
 
   }
+
 
 
   async authenticate(json) {
@@ -43,6 +44,7 @@ module.exports = class Usuario extends Cadastro {
   }
  
 
+
   async validateLoja(idLoja) {
 
     let loja = await Loja.getInstance(idLoja)
@@ -58,9 +60,11 @@ module.exports = class Usuario extends Cadastro {
   }
 
   
+
   static getInstance(value, field) {
     return Cadastro.getInstance(Usuario, value, field)
   }
+
 
 
   static async validateToken(token) {
@@ -84,6 +88,7 @@ module.exports = class Usuario extends Cadastro {
   }
 
 
+
   static decodeToken(token) {
     let payload
     try {
@@ -94,6 +99,8 @@ module.exports = class Usuario extends Cadastro {
     return payload
   }
 
+  
+  
   static generateToken(payload) {
     return jwt.sign(payload, secretKey, { expiresIn: '1d' })
   }

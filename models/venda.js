@@ -1,7 +1,6 @@
-const db = require('../utils/db')
+const knex = require('knex')
 
 module.exports = class Venda {
-
 
   static async delete(data) {
 
@@ -13,15 +12,14 @@ module.exports = class Venda {
     if (msg.length > 0) 
       return {sucesso: false, erros: msg}
 
-    let sql = 'SELECT api_venda_excluir( $1 ) as sucesso'
-  
-    let {rows} = await db.query(sql, [JSON.stringify(data)])
+    let rows =  await knex.raw('SELECT api_venda_excluir( ? ) as sucesso', JSON.stringify(data))
   
     return {sucesso: rows[0].sucesso}
   
   }
 
   
+
   static async deleteItem(item) {
 
     let msg = []
@@ -36,13 +34,12 @@ module.exports = class Venda {
     if (msg.length > 0) 
       return {sucesso: false, erros: msg}
 
-    let sql = 'SELECT api_venda_excluir_item( $1 ) as sucesso'
-  
-    let {rows} = await db.query(sql, [JSON.stringify(item)])
+    let rows = await knex.raw('SELECT api_venda_excluir_item( ? ) as sucesso', JSON.stringify(item))
   
     return {sucesso: rows[0].sucesso}
   
   }
+
 
 
   static async getItens(item) {
@@ -55,15 +52,12 @@ module.exports = class Venda {
 
     if (! msg.length) {
 
-      let sql = 'SELECT * from vs_api_vendas_temp_itens WHERE id_venda = $1'
-      let params = [item.id_venda]
+      let sqlBuilder = knex('vs_api_vendas_temp_itens').where('id_venda', item.id_venda)
 
-      if (item.id_item) {
-        sql += ' and id_item = $2 ORDER BY id_item'
-        params.push(item.id_item)
-      }
+      if (item.id_item) 
+        sqlBuilder.where('id_item', item.id_item).orderBy('id_item')
 
-      let {rows} = await db.query(sql, params)
+      let rows = await sqlBuilder
 
       if (item.id_item) {
         
@@ -88,6 +82,7 @@ module.exports = class Venda {
   }
 
 
+
   static async getVendas(oJson) {
 
     let msg = []
@@ -100,15 +95,14 @@ module.exports = class Venda {
     if (msg.length) 
       return {sucesso: false, erros: msg}
 
-    let sql = `SELECT * 
-               FROM vs_api_vendas_temp 
-               WHERE id_loja = $1 and id_usuario = $2 
-               ORDER BY id_venda`
-    let {rows} = await db.query(sql, [oJson.id_loja, oJson.id_usuario])
+    const rows = await knex('vs_api_vendas_temp')
+      .where({ id_loja: oJson.id_loja, id_usuario: oJson.id_usuario })
+      .orderBy('id_venda')
 
     return {sucesso: true, vendas: rows}
 
   }
+
 
 
   static async saveItem(item) {
@@ -131,9 +125,7 @@ module.exports = class Venda {
     if (msg.length > 0) 
       return {sucesso: false, erros: msg}
 
-    let sql = 'SELECT api_venda_salvar_item( $1 ) as result'
-
-    let {rows} = await db.query(sql, [JSON.stringify(item)])
+    const rows = await knex.raw('SELECT api_venda_salvar_item( ? ) as result', jSON.stringify(item))
 
     return {
       sucesso: true, 
@@ -143,14 +135,17 @@ module.exports = class Venda {
   }
 
 
+
   static async gerarOrcamento(venda) {
     return await this.converterVenda('OR', venda)
   }
 
 
+
   static async gerarPreVenda(venda) {
     return await this.converterVenda('PV', venda)
   }
+
 
 
   static async converterVenda(tipoDoc, venda) {
@@ -170,16 +165,16 @@ module.exports = class Venda {
     if (msg.length > 0) 
       return {sucesso: false, erros: msg}
 
-    let sql = `SELECT api_venda_gerar_${ tipoDoc==='PV' ? 'prevenda' : 'orcamento' }( $1 ) as result`
+    const rows = await knex.raw(`SELECT api_venda_gerar_${ tipoDoc==='PV' ? 'prevenda' : 'orcamento' }( ? ) as result`,
+                                JSON.stringify(venda))
 
-    let {rows} = await db.query(sql, [JSON.stringify(venda)])
-
-    return {
+                                return {
       sucesso: true,
       ...JSON.parse(rows[0].result)
     }
 
   }
+
 
 
   static validar(oJson, aMsg) {
@@ -193,6 +188,7 @@ module.exports = class Venda {
   }
 
 
+  
   static async mudarTabelaPreco(venda) {
     let msg = []
     venda.id_venda = parseInt(venda.id_venda || 0)
@@ -205,9 +201,7 @@ module.exports = class Venda {
     if (msg.length > 0)
       return {sucesso: false, erros: msg}
 
-    let sql = 'SELECT api_venda_mudar_tab_preco( $1 ) as result'
-
-    let {rows} = await db.query(sql, [JSON.stringify(venda)])
+    const rows = await knex.raw('SELECT api_venda_mudar_tab_preco( ? ) as result', JSON.stringify(venda))
 
     return {
       sucesso: true,

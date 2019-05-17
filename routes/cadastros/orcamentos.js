@@ -3,94 +3,79 @@ const Orcamento = require('../../models/orcamento')
 const Venda = require('../../models/venda')
 
 
-class RotaOrcamento {
+module.exports = (app) => {
   
-  constructor(app) {
-    this.app = app
-    this.setRoutePost()    
-    this.setRouteGetNumero()
-    this.setRouteGetItens()
-    this.setRouteGetPeriodo()
-  }
-
-
-  setRoutePost() {
-    const route = this.app.route(this.app.get('path-api') + '/orcamentos')    
-    route.post((req, res, next) => {
-
-      req.body.id_loja     = req.login.idLoja
-      req.body.id_usuario  = req.login.usuario.data.id
-      req.body.id_vendedor = req.login.usuario.data.id_vendedor
-      Venda.gerarOrcamento(req.body)
-        .then(result => res.status(result.sucesso ? 200 : 400).json(result))
-        .catch(error => next(error))
-
-    })
-  }
-
-
-  setRouteGetNumero() {
-    const route = this.app.route(this.app.get('path-api') + '/orcamentos/:numero')    
-    route.get((req, res, next) => {
-
-      this.buscarOrcamento(req)
-        .then(result => res.status(200).json(result))
-        .catch(error => next(error))
-
-    })
-  }
-
-
-  setRouteGetItens() {
-    const route = this.app.route(this.app.get('path-api') + '/orcamentos/:numero/itens')    
-    route.get((req, res, next) => {
-
-      this.buscarOrcamento(req)
-        .then(result => res.status(200).json(result.itens))
-        .catch(error => next(error))
-
-    })
-  }
-
-
-  async buscarOrcamento(req) {
-    let idLoja = req.login.idLoja
-    let numero = req.params.numero
-    let orcamento = await Orcamento.getInstance(idLoja, numero)
-
-    if (! orcamento.data) 
-      throw new createError.NotFound('Orçamento ' + numero + ' não encontrada na loja ' + idLoja + ' !')
-    
-    if (orcamento.data.id_vendedor !== req.login.usuario.data.id_vendedor) 
-      throw new createError.Unauthorized('Acesso não autorizado ao orçamento ' + numero + ' da loja ' + idLoja + ' !')      
+  const path = app.get('path-api') + '/orcamentos'
   
-    return orcamento.data
-  }
+  
+  app.post(path, (req, res, next) => {
+
+    req.body.id_loja     = req.login.idLoja
+    req.body.id_usuario  = req.login.usuario.data.id
+    req.body.id_vendedor = req.login.usuario.data.id_vendedor
+    Venda.gerarOrcamento(req.body)
+      .then(result => res.status(result.sucesso ? 200 : 400).json(result))
+      .catch(error => next(error))
+
+  })
 
 
-  setRouteGetPeriodo() {
-    const route = this.app.route(this.app.get('path-api') + '/orcamentos')    
-    route.get( (req, res, next) => {
 
-      const getOrcamentos = async () => {
-        req.query.id_loja     = req.login.idLoja
-        req.query.id_vendedor = req.login.usuario.data.id_vendedor
-        let lista = await new Orcamento().findByPeriodo(req.query)
-        if (! lista.length) {
-          throw new createError.NotFound('Orçamentos não encontrados!')
-        }
-        return lista.map(orcamento => orcamento.data)
+  app.get(path + '/:numero', (req, res, next) => {
+
+    buscarOrcamento(req)
+      .then(result => res.status(200).json(result))
+      .catch(error => next(error))
+
+  })
+
+
+
+  app.get(path + '/:numero/itens', (req, res, next) => {
+
+    buscarOrcamento(req)
+      .then(result => res.status(200).json(result.itens))
+      .catch(error => next(error))
+
+  })
+
+
+
+  app.get(path, (req, res, next) => {
+
+    const getOrcamentos = async () => {
+      req.query.id_loja     = req.login.idLoja
+      req.query.id_vendedor = req.login.usuario.data.id_vendedor
+      let lista = await new Orcamento().findByPeriodo(req.query)
+      if (! lista.length) {
+        throw new createError.NotFound('Orçamentos não encontrados!')
       }
-      
-      getOrcamentos()
-        .then(lista => res.status(200).json(lista))
-        .catch(error => next(error))
+      return lista.map(orcamento => orcamento.data)
+    }
+    
+    getOrcamentos()
+      .then(lista => res.status(200).json(lista))
+      .catch(error => next(error))
 
-    })
-  }
+  })
+
 }
 
-module.exports = (app) => new RotaOrcamento(app)
+
+
+async function buscarOrcamento(req) {
+  const {idLoja, numero} = req.login
+  const orcamento = await Orcamento.getInstance(idLoja, numero)
+
+  if (! orcamento.data) 
+    throw new createError.NotFound('Orçamento ' + numero + ' não encontrada na loja ' + idLoja + ' !')
+  
+  if (orcamento.data.id_vendedor !== req.login.usuario.data.id_vendedor) 
+    throw new createError.Unauthorized('Acesso não autorizado ao orçamento ' + numero + ' da loja ' + idLoja + ' !')      
+
+  return orcamento.data
+}
+
 
 
 /**
