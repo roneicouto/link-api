@@ -4,10 +4,12 @@ const consign = require('consign')
 const dotEnv = require('dotenv-safe')
 const morgan = require('morgan')
 const utils = require('./utils/utils')
-
+const cors = require('cors')
+    
 dotEnv.config({ allowEmptyValues: true})
 
 const app = express()
+app.use(cors())
 
 app.set('path-api', '/api/v1')
 app.use(bodyParser.json())
