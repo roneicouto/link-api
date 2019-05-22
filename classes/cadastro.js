@@ -77,7 +77,7 @@ module.exports = class Cadastro {
     }
     params.order.forEach(o => { sqlBuilder.orderByRaw(o) })
 
-    const promises = await sqlBuilder.map(async row => Object.create(this).setData(row))
+    const promises = await sqlBuilder.map(row => Object.create(this).setData(row))
 
     return Promise.all(promises)
   }

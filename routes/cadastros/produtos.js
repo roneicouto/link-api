@@ -56,7 +56,7 @@ module.exports = (app) => {
         if (!lista.length) {
           throw new createError.NotFound('Produtos não encontrados!')
         }
-        res.status(200).json(lista.map(produto => produto.data))
+        res.status(200).json(lista)
       })
       .catch(error =>next(error))
 
