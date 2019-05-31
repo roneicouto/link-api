@@ -3,7 +3,7 @@ const Venda = require('../../models/venda')
 module.exports = (app) => {
 
   const path = app.get('path-api') + '/vendas'
-  const pathItem = path + '/:id_venda/itens/:id_tem'
+  const pathItem = path + '/:id_venda/itens/:id_item'
   
 
   app.post(path + '/:id_venda?/itens', (req, res, next) => {
