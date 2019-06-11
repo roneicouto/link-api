@@ -35,6 +35,7 @@ module.exports = class PreVenda {
     query.page = query.page || 1
     query.rows = query.rows || process.env.DB_PAGE_ROWS
 
+    let orderDir   = query.desc && 'desc' || 'asc'
     let sqlBuilder = knex(table).whereBetween('data', [query.data_ini, query.data_fim])
 
     if (query.id_loja) 
@@ -56,7 +57,9 @@ module.exports = class PreVenda {
       sqlBuilder.where('id_pos', '~', query.id_posicao)
 
     sqlBuilder
-      .orderBy(['data', 'id_loja', 'numero'])
+      .orderBy('data', orderDir)
+      .orderBy('id_loja', orderDir)
+      .orderBy('numero', orderDir)
       .limit(query.rows)
       .offset(query.rows * (query.page-1))
 
