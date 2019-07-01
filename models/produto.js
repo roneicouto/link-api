@@ -68,7 +68,7 @@ module.exports = class Produto extends Cadastro {
 
 
   findByCodigoBarras(codBarras) {
-    return this.findByField('codbarras', '=', codBarras)
+    return this.findByField('cod_barras', '=', codBarras)
   }
 
 
