@@ -22,7 +22,7 @@ consign().include('routes/login.js').then('routes/cadastros').into(app)
 app.use(utils.routeNotFound)
 app.use(utils.handlerError)
 
-port = process.env.SRV_PORT || 3000;
+port = process.env.PORT || 3001;
 db = process.env.DB_DATABASE || 'nao pegou banco';
 app.listen(port, () => {
   console.log('Servidor rodando na porta '+port+ ' e no banco: '+db)
