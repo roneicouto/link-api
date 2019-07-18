@@ -12,7 +12,7 @@
     "consign": "^0.1.6",
     "cors": "^2.8.5",
     "cpf": "^2.0.1",
-    "dotenv-safe": "^6.1.0",
+    "dotenv": "^8.0.0",
     "express": "^4.16.4",
     "http-errors": "^1.7.1",
     "inscricaoestadual": "0.0.5",

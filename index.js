@@ -1,12 +1,12 @@
 const express= require('express')
 const bodyParser = require('body-parser')
 const consign = require('consign')
-const dotEnv = require('dotenv-safe')
+const dotEnv = require('dotenv')
 const morgan = require('morgan')
 const utils = require('./utils/utils')
 const cors = require('cors')
     
-dotEnv.config({ allowEmptyValues: true})
+dotEnv.config()
 
 const app = express()
 app.use(cors())
