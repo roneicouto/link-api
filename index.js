@@ -25,5 +25,5 @@ app.use(utils.handlerError)
 port = process.env.PORT || 3001;
 db = process.env.DB_DATABASE || 'nao pegou banco';
 app.listen(port, () => {
-  console.log('Servidor rodando na porta '+port+ ' e no banco: '+db)
+  console.log('Servidor rodando na porta '+port+ ' e no banco: '+db + 'knex em: '+ process.env.DB_PORT)
 })

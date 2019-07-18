@@ -4,10 +4,10 @@ module.exports = {
 
     client: 'postgresql',
     connection: {
-      host: process.env.DB_HOST || 'localhost',
-      user: process.env.DB_USER || 'icomp',
-      password: process.env.DB_PASSWORD || 'icompdbpw',
-      database: process.env.DB_DATABASE || 'info',
+      host: process.env.DB_HOST || 'nlinkdb.crbepnydsmvc.us-east-1.rds.amazonaws.com',
+      user: process.env.DB_USER || 'nlink',
+      password: process.env.DB_PASSWORD || 'nlinkdbpw',
+      database: process.env.DB_DATABASE || 'apilink',
       port: process.env.DB_PORT || 5432
     },
     pool: {
