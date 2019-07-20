@@ -33,10 +33,9 @@ const Usuario = require('../models/usuario')
 
 module.exports = (app) => {
 
-  const path = app.get('path-api') + '/login'
+  const path = app.get('path-api')
 
-
-  app.post(path, (req, res, next) => {
+  app.post(path + '/login', (req, res, next) => {
 
     const user = new Usuario()
     user.authenticate(req.body)
@@ -53,7 +52,7 @@ module.exports = (app) => {
 
 
 
-  app.use(app.get('path-api'), (req, res, next) => {
+  app.use(path , (req, res, next) => {
 
     let token = req.headers.authorization || req.body.token || req.query.token
 
@@ -68,13 +67,23 @@ module.exports = (app) => {
     token = token.replace('Bearer ', '')
 
     Usuario.validateToken(token)
-      .then(login => {
-        req.login = login
+      .then( ({ usuario, idLoja }) => {
+        req.login = {usuario, idLoja }
         next() 
       })
       .catch(error => next(error))
 
   })
 
+
+  app.get(path + '/token', (req, res, next) => {
+
+    res.status(200).json({
+      sucess: true,
+      idUser: req.login.usuario.data.id,
+      idLoja: req.login.idLoja
+    })
+
+  })
 
 }
