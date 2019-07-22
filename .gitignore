@@ -58,6 +58,11 @@ package-lock*
 
 # dotenv environment variables file
 .env
+.env.example
+.env.production
 
 # next.js build output
 .next
+
+#outros
+knexfile.js
