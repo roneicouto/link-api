@@ -15,7 +15,8 @@ module.exports = class RotaCadastro {
       const params = { 
         page: parseInt(req.query.page) || 0,
         rows: parseInt(req.query.rows) || 0,
-        order: [req.query.order || 'id']
+        order: [req.query.order || 'id'],
+        count: !!req.query.count
       }
 
       if (req.query.value) {
@@ -27,11 +28,12 @@ module.exports = class RotaCadastro {
       }
 
       this.cadastro.getAll(params)
-        .then(rows => {
+        .then(resp => {
+          const rows = resp.count ? resp.rows : resp
           if (! rows.length) {
             throw new createError.NotFound('Registros não encontrados!')
           } 
-          res.status(200).json(rows)
+          res.status(200).json(resp)
         })
         .catch(error =>next(error))
     })

@@ -52,34 +52,49 @@ module.exports = class Cadastro {
 
 
   async getAll(params = {}) {
-    params.page  = params.page  || 0
-    params.rows  = params.rows  || 0
-    params.where = params.where || []
-    params.order = params.order || []
+    params.page    = params.page  || 0
+    params.rows    = params.rows  || 0
+    params.where   = params.where || []
+    params.order   = params.order || []
+    params.count   = !!params.count
 
     const sqlBuilder = this.knex(this.table)
 
-    if (params.page > 0) {
-      sqlBuilder.offset((params.page - 1) * params.rows)
-    }
-
-    if (params.rows > 0) {
-      sqlBuilder.limit(params.rows)
-    }
-
-    if (! Array.isArray(params.where)) {
+    if (! Array.isArray(params.where)) 
       params.where = [params.where]  
-    }
+
     params.where.forEach(p => { sqlBuilder.where(p.field, p.operator, p.value) })
 
-    if (! Array.isArray(params.order)) {
-      params.order = [params.order]
+    let result = {}, promises = []
+    
+    if (params.count) {
+      promises.push(sqlBuilder.clone().count('* as c')
+                      .then(rows => result.count = parseInt(rows[0].c)))
     }
-    params.order.forEach(o => { sqlBuilder.orderByRaw(o) })
 
-    const promises = await sqlBuilder.map(row => Object.create(this).setData(row))
+    if (! Array.isArray(params.order)) 
+      params.order = [params.order]
 
-    return Promise.all(promises)
+    params.order.forEach(o => { 
+      if (o.field)
+        sqlBuilder.orderBy(o.field, o.desc && 'desc' || 'asc') 
+      else
+        sqlBuilder.orderByRaw(o)
+    })
+
+    if (params.page > 0) 
+      sqlBuilder.offset((params.page - 1) * params.rows)
+
+    if (params.rows > 0) 
+      sqlBuilder.limit(params.rows)
+
+    promises.push(sqlBuilder.map(row => Object.create(this).setData(row))
+                    .then(rows => params.count ? result.rows = rows : result = rows))
+
+    await Promise.all(promises)
+
+    return result
+
   }
 
 
