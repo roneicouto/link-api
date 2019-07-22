@@ -13,6 +13,6 @@ define({
     "name": "apidoc",
     "time": "2019-04-15T17:49:49.468Z",
     "url": "http://apidocjs.com",
-    "version": "0.17.7"
+    "version": "0.17.8"
   }
 });
